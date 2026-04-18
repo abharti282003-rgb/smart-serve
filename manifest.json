@@ -1,7 +1,7 @@
 {
   "name": "Smart Serve — Ghar Ka Hisaab",
   "short_name": "SmartServe",
-  "description": "Parivar ka ghar ka saamaan tracker — 11 Indian languages, family profiles, budget, expiry alerts",
+  "description": "Family Home Inventory Tracker — 11 Indian languages, family profiles, budget, expiry alerts",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#faf7f2",

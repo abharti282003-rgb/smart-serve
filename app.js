@@ -1,23 +1,68 @@
 // app.js — Smart Serve · Enhanced Major Project Edition
 
-const EMOJI_MAP={aata:'🌾',atta:'🌾',flour:'🌾',maida:'🌾',chawal:'🍚',rice:'🍚',daal:'🫘',dal:'🫘',rajma:'🫘',chana:'🫘',doodh:'🥛',milk:'🥛',dahi:'🥣',yogurt:'🥣',paneer:'🧀',ghee:'🧈',butter:'🧈',aloo:'🥔',potato:'🥔',pyaz:'🧅',onion:'🧅',tamatar:'🍅',tomato:'🍅',lahsun:'🧄',garlic:'🧄',adrak:'🫚',ginger:'🫚',mirch:'🌶️',chilli:'🌶️',pepper:'🌶️',carrot:'🥕',gajar:'🥕',spinach:'🥬',palak:'🥬',gobi:'🥦',cauliflower:'🥦',brinjal:'🍆',baingan:'🍆',peas:'🫛',matar:'🫛',lemon:'🍋',nimbu:'🍋',apple:'🍎',banana:'🍌',kela:'🍌',mango:'🥭',aam:'🥭',oil:'🫙',tel:'🫙',namak:'🧂',salt:'🧂',sugar:'🍬',cheeni:'🍬',chai:'🍵',tea:'🍵',coffee:'☕',haldi:'🟡',turmeric:'🟡',masala:'🌿',sabun:'🧼',soap:'🧼',shampoo:'🧴',toothpaste:'🦷',detergent:'🧹',water:'💧',paani:'💧',juice:'🧃',biscuit:'🍪',bread:'🍞',roti:'🫓',noodles:'🍜',maggi:'🍜',egg:'🥚',anda:'🥚',chicken:'🍗',fish:'🐟',sabzi:'🥕',veggie:'🥦',bhindi:'🫛',lauki:'🥒',karela:'🥒',methi:'🌿',saag:'🥬'};
+const EMOJI_MAP={
+  flour: '🌾',
+  refined_flour: '🌾',
+  rice: '🍚',
+  lentils: '🫘',
+  kidney_beans: '🫘',
+  chickpeas: '🫘',
+  milk: '🥛',
+  yogurt: '🥣',
+  cottage_cheese: '🧀',
+  clarified_butter: '🧈',
+  butter: '🧈',
+  potato: '🥔',
+  onion: '🧅',
+  tomato: '🍅',
+  garlic: '🧄',
+  ginger: '🫚',
+  chili: '🌶️',
+  carrot: '🥕',
+  spinach: '🥬',
+  cauliflower: '🥦',
+  eggplant: '🍆',
+  peas: '🫛',
+  lemon: '🍋',
+  apple: '🍎',
+  banana: '🍌',
+  mango: '🥭',
+  cooking_oil: '🫙',
+  salt: '🧂',
+  sugar: '🍬',
+  tea: '🍵',
+  coffee: '☕',
+  turmeric: '🟡',
+  spices: '🌿',
+  soap: '🧼',
+  shampoo: '🧴',
+  toothpaste: '🦷',
+  detergent: '🧹',
+  water: '💧',
+  juice: '🧃',
+  biscuit: '🍪',
+  bread: '🍞',
+  flatbread: '🫓',
+  noodles: '🍜',
+  egg: '🥚',
+  chicken: '🍗',
+  fish: '🐟',
+  vegetables: '🥕',
+  okra: '🫛',
+  bottle_gourd: '🥒',
+  bitter_gourd: '🥒',
+  fenugreek_leaves: '🌿',
+  leafy_greens: '🥬'
+};
 const PROFILE_AVATARS=['👨','👩','👴','👵','👦','👧','🧑','😊','🌟','🏠','👑','🦁','🧒','👶','🧔','👱','🧕','🙋'];
-const UNITS = ['pcs','kg','ltr','gm'];
+const UNITS = ['pcs','kg','ltr','gm','pkt'];
 
 function getEmoji(name){const key=name.toLowerCase().trim();if(EMOJI_MAP[key])return EMOJI_MAP[key];for(const k of Object.keys(EMOJI_MAP)){if(key.includes(k)||k.includes(key))return EMOJI_MAP[k];}return '📦';}
 
 // Default items with units
 const DEFAULT_ITEMS=[
-  {name:'Aata',qty:5,minQty:2,unit:'kg',emoji:'🌾'},
-  {name:'Doodh',qty:2,minQty:1,unit:'ltr',emoji:'🥛'},
-  {name:'Chawal',qty:3,minQty:2,unit:'kg',emoji:'🍚'},
-  {name:'Dal',qty:2,minQty:1,unit:'kg',emoji:'🫘'},
-  {name:'Aloo',qty:2,minQty:1,unit:'kg',emoji:'🥔'},
-  {name:'Pyaz',qty:1.5,minQty:0.5,unit:'kg',emoji:'🧅'},
-  {name:'Tamatar',qty:1,minQty:0.5,unit:'kg',emoji:'🍅'},
-  {name:'Ghee',qty:1,minQty:1,unit:'pcs',emoji:'🧈'},
-  {name:'Namak',qty:1,minQty:1,unit:'pcs',emoji:'🧂'},
-  {name:'Chai',qty:1,minQty:1,unit:'pcs',emoji:'🍵'}
+  {name:'flour',qty:5,minQty:2,unit:'kg',emoji:'🌾'},
+  {name:'milk',qty:2,minQty:1,unit:'ltr',emoji:'🥛'},
 ];
 
 let inventory=[],shoppingList=[],expenses=[],expiryItems=[],profiles=[],currentProfile=null;
@@ -140,7 +185,7 @@ function getFilteredInventory(){
 function formatQty(item){
   const q=item.qty;
   const u=item.unit||'pcs';
-  const unitLabel={pcs:'',kg:' kg',ltr:' L',gm:' g'};
+  const unitLabel={pcs:'',kg:' kg',ltr:' L',gm:' g',pkt:' pkt'};
   return q+(unitLabel[u]||'');
 }
 
@@ -157,7 +202,7 @@ function renderInventory(){
     const sc=isOut?'out-of-stock':isLow?'low-stock':'in-stock';
     const sl=isOut?t('outOfStock'):isLow?t('lowStock'):t('inStock');
     const unit=item.unit||'pcs';
-    const unitLabel={pcs:'pcs',kg:'kg',ltr:'L',gm:'g'}[unit]||'';
+    const unitLabel={pcs:'pcs',kg:'kg',ltr:'L',gm:'g',pkt:' pkt'}[unit]||'';
     const card=document.createElement('div');
     card.className=`item-card ${sc}`;
     card.style.animationDelay=`${idx*0.04}s`;
@@ -332,34 +377,34 @@ function renderFamily(){
   container.innerHTML=`
     <div class="family-hero">
       <div class="family-hero-icon">👨‍👩‍👧‍👦</div>
-      <div class="family-hero-title">Parivar Ka Hisaab</div>
-      <div class="family-hero-sub">Ek app, poora parivar — sab dekhen, sab milke chalayein</div>
+      <div class="family-hero-title">Family Accounts</div>
+      <div class="family-hero-sub">One app, the whole family — everyone can view it and manage it together.</div>
     </div>
 
     <div class="section-card">
-      <div class="section-title">📱 App Install Karo — Mobile Pe</div>
+      <div class="section-title">📱 Install the App — On Your Mobile</div>
       <div class="install-steps">
-        <div class="install-step"><div class="step-num">1</div><div class="step-text"><strong>Android:</strong> Chrome mein kholein → Menu (⋮) → "Add to Home Screen" → Install</div></div>
-        <div class="install-step"><div class="step-num">2</div><div class="step-text"><strong>iPhone:</strong> Safari mein kholein → Share (□↑) → "Add to Home Screen" → Add</div></div>
-        <div class="install-step"><div class="step-num">3</div><div class="step-text">Ab ye app bilkul normal app ki tarah phone mein dikhai dega!</div></div>
+        <div class="install-step"><div class="step-num">1</div><div class="step-text"><strong> Android:</strong>Open in Chrome → Menu (⋮) → "Add to Home Screen" → Install</div></div>
+        <div class="install-step"><div class="step-num">2</div><div class="step-text"><strong> iPhone:</strong> Open in Safari → Share (□↑) → "Add to Home Screen" → Add</div></div>
+        <div class="install-step"><div class="step-num">3</div><div class="step-text">Now this app will appear on your phone just like a regular app!</div></div>
       </div>
-      <button class="btn-install-big" onclick="triggerInstall()">📲 Abhi Install Karein</button>
+      <button class="btn-install-big" onclick="triggerInstall()">📲 Install Now </button>
     </div>
 
     <div class="section-card">
-      <div class="section-title">🔗 Parivar Ke Saath Share Karo</div>
+      <div class="section-title">🔗 Share it with your family</div>
       <div class="share-url-box">
         <span class="share-url-text" id="shareUrlText">${appUrl}</span>
         <button class="btn-copy-url" onclick="copyAppUrl('${appUrl}')">📋 Copy</button>
       </div>
       <div class="share-btns">
-        <button class="btn-wa-share" onclick="shareViaWhatsApp('${appUrl}')">📲 WhatsApp pe bhejo</button>
-        <button class="btn-share-native" onclick="nativeShare('${appUrl}')">↗ Share karo</button>
+        <button class="btn-wa-share" onclick="shareViaWhatsApp('${appUrl}')">📲 Send via WhatsApp</button>
+        <button class="btn-share-native" onclick="nativeShare('${appUrl}')">↗ Share </button>
       </div>
     </div>
 
     <div class="section-card">
-      <div class="section-title">👥 Profiles — Har Sadasya Ka Alag Hisaab</div>
+      <div class="section-title">👥 Profiles — Individual Accounts for Every Member</div>
       <div class="profiles-list">
         ${profiles.map(p=>`
           <div class="family-profile-row">
@@ -370,40 +415,40 @@ function renderFamily(){
           </div>
         `).join('')}
       </div>
-      <button class="btn-add-family" onclick="openCreateProfile()">➕ Naya Sadasya Jodhein</button>
+      <button class="btn-add-family" onclick="openCreateProfile()">➕ New Profile</button>
     </div>
 
     <div class="section-card">
-      <div class="section-title">💡 App Kaise Use Karein</div>
+      <div class="section-title">💡 How to use app</div>
       <div class="tips-grid">
-        <div class="tip-card"><div class="tip-icon">🎤</div><div class="tip-text"><strong>Voice:</strong> Mic dabao aur saamaan ka naam bolo — turant jud jaata hai</div></div>
-        <div class="tip-card"><div class="tip-icon">📷</div><div class="tip-text"><strong>Photo:</strong> Scan karke ya photo khenchke saamaan add karo</div></div>
-        <div class="tip-card"><div class="tip-icon">⚖️</div><div class="tip-text"><strong>Units:</strong> Sabzi kg mein, doodh liter mein, baaki pieces mein</div></div>
-        <div class="tip-card"><div class="tip-icon">📲</div><div class="tip-text"><strong>WhatsApp:</strong> Shopping list seedha WhatsApp pe share karo</div></div>
-        <div class="tip-card"><div class="tip-icon">⏰</div><div class="tip-text"><strong>Expiry:</strong> Saamaan ki expiry date daalo, alert milega</div></div>
-        <div class="tip-card"><div class="tip-icon">💰</div><div class="tip-text"><strong>Budget:</strong> Mahine ka budget set karo, kharcha track karo</div></div>
+        <div class="tip-card"><div class="tip-icon">🎤</div><div class="tip-text"><strong>Voice:</strong> Press the mic and say the item name — it gets added instantly</div></div>
+        <div class="tip-card"><div class="tip-icon">📷</div><div class="tip-text"><strong>Photo:</strong> Scan or take a photo to add items</div></div>
+        <div class="tip-card"><div class="tip-icon">⚖️</div><div class="tip-text"><strong>Units:</strong> Vegetables are measured in kg, milk in liters, and other items in pieces</div></div>
+        <div class="tip-card"><div class="tip-icon">📲</div><div class="tip-text"><strong>WhatsApp:</strong> Share the shopping list directly on WhatsApp</div></div>
+        <div class="tip-card"><div class="tip-icon">⏰</div><div class="tip-text"><strong>Expiry:</strong> Set an expiry date for items and receive alerts</div></div>
+        <div class="tip-card"><div class="tip-icon">💰</div><div class="tip-text"><strong>Budget:</strong> Set your monthly budget and track your expenses</div></div>
       </div>
     </div>
   `;
 }
 
 function deleteProfile(id){
-  if(profiles.length<=1){showToast('Ek profile toh chahiye!');return;}
-  if(!confirm('Ye profile delete karein?'))return;
+  if(profiles.length<=1){showToast('At least one profile is needed!');return;}
+  if(!confirm('Delete this profile?'))return;
   profiles=profiles.filter(p=>p.id!==id);
   saveProfiles();
   renderFamily();
-  showToast('Profile hata di','success');
+  showToast('Profile deleted','success');
 }
 
-function copyAppUrl(url){navigator.clipboard?.writeText(url).then(()=>showToast('✓ Link copy ho gaya!','success')).catch(()=>showToast('Link copy nahi hua'));}
-function shareViaWhatsApp(url){const msg=`🏠 *Smart Serve* — Ghar ka saamaan track karo!\n\nYe app use karo: ${url}\n\nHar sadasya apna alag profile bana sakta hai! 👨‍👩‍👧‍👦`;window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
-function nativeShare(url){if(navigator.share){navigator.share({title:'Smart Serve',text:'Ghar ka saamaan app',url}).catch(()=>{});}else{copyAppUrl(url);}}
+function copyAppUrl(url){navigator.clipboard?.writeText(url).then(()=>showToast('✓ Link copied!','success')).catch(()=>showToast('Link is not copied','error'));}
+function shareViaWhatsApp(url){const msg=`🏠 *Smart Serve* — Track household items!\n\nUse this app: ${url}\n\nEach member can create their own separate profile! 👨‍👩‍👧‍👦`;window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
+function nativeShare(url){if(navigator.share){navigator.share({title:'Smart Serve',text:'Home Inventory App',url}).catch(()=>{});}else{copyAppUrl(url);}}
 
 let deferredInstall=null;
 function triggerInstall(){
   if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('installBanner').style.display='none';showToast('✓ App install ho rahi hai!','success');});}
-  else{showToast('Browser pe jaake install karo — steps upar dekho');}
+  else{showToast('Install via your browser — check the steps above');}
 }
 
 // ===== RENDER ALL =====
@@ -547,8 +592,9 @@ function startVoice(){
     if(/kilo|kg|kilogram/i.test(s))detectedUnit='kg';
     else if(/liter|litre|ltr/i.test(s))detectedUnit='ltr';
     else if(/gram|gm/i.test(s))detectedUnit='gm';
+    else if(/pkt|packet/i.test(s))detectedUnit='pkt';
     // Remove unit words from name
-    const cleanName=s.replace(/\d+\s*(kilo|kg|kilogram|liter|litre|ltr|gram|gm|pcs|piece)/gi,'').trim()||s;
+    const cleanName=s.replace(/\d+\s*(kilo|kg|kilogram|liter|litre|ltr|gram|gm|pcs|piece|pkt|packet)/gi,'').trim()||s;
     addItemToInventory(cleanName,1,1,detectedUnit);
     showToast('🎤 "'+cleanName+'" add hua!','success');
   };
@@ -586,9 +632,9 @@ async function startCamera(){
     video.srcObject=scanStream;
     video.play();
     startFrameAnalysis(video);
-    document.getElementById('scanStatus').textContent='📷 Camera ready — barcode ya product dikhao';
+    document.getElementById('scanStatus').textContent='📷 Camera ready — Show the barcode or product';
   }catch(e){
-    document.getElementById('scanStatus').textContent='❌ Camera nahi mila — neeche photo dal sakte hain';
+    document.getElementById('scanStatus').textContent='❌ Camera not available — you can upload a photo below';
   }
 }
 
@@ -615,7 +661,7 @@ function startFrameAnalysis(video){
 }
 
 async function lookupBarcode(code){
-  document.getElementById('scanStatus').textContent='🔍 Product dhundh raha hoon...';
+  document.getElementById('scanStatus').textContent='🔍 Looking for a product…';
   try{
     const res=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
     const data=await res.json();
@@ -658,7 +704,7 @@ async function handleOCRImage(e){
   const file=e.target.files[0];if(!file)return;
   const status=document.getElementById('ocrStatus');
   const ocrBtn=document.getElementById('ocrBtn');
-  status.textContent='🔍 Photo padh raha hoon...';
+  status.textContent='🔍 Scanning the photo…';
   if(ocrBtn)ocrBtn.disabled=true;
   try{
     const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('fail'));r.readAsDataURL(file);});
@@ -672,7 +718,7 @@ async function handleOCRImage(e){
           role:'user',
           content:[
             {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:base64}},
-            {type:'text',text:'Is image mein kaunsa grocery/household product hai? JSON mein jawab do: {"name":"product name","unit":"pcs/kg/ltr/gm"}. Sirf JSON, koi aur text nahi.'}
+            {type:'text',text:'Which grocery or household product is in this image? JSON mein jawab do: {"name":"product name","unit":"pcs/kg/ltr/gm/pkt"}. Sirf JSON, koi aur text nahi.'}
           ]
         }]
       })

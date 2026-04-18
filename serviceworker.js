@@ -1,6 +1,6 @@
-// service-worker.js — Smart Serve PWA
+// service-worker.js — Smart Serve Enhanced Edition
 
-const CACHE_NAME = 'smart-serve-v2';
+const CACHE_NAME = 'smart-serve-v3';
 const ASSETS = [
   '/',
   '/index.html',

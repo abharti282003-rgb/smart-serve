@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#059669" />
-  <meta name="description" content="Smart Serve — Ghar ka Inventory Manager" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <link rel="manifest" href="manifest.json" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#7c3aed"/>
+  <meta name="description" content="Smart Serve — Ghar ka Inventory Manager"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <link rel="manifest" href="manifest.json"/>
   <title>Smart Serve</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body>
 
-<!-- PWA Install Banner -->
+<!-- PWA Banner -->
 <div id="installBanner" style="display:none">
-  <span>📱 Install Smart Serve on your phone!</span>
+  <span>📱 Install Smart Serve!</span>
   <button id="installBtn">Install App</button>
 </div>
+
+<!-- ===== PROFILE SCREEN ===== -->
+<div id="profileScreen" class="profile-screen hidden">
+  <div class="profile-screen-inner">
+    <div class="profile-screen-logo">🏠</div>
+    <h1 class="profile-screen-title" data-i18n="welcomeTitle">Welcome to Smart Serve</h1>
+    <p class="profile-screen-sub" data-i18n="welcomeSub">Select your profile to continue</p>
+    <div class="profile-grid" id="profileGrid"></div>
+  </div>
+</div>
+
+<!-- ===== MAIN APP ===== -->
+<div id="mainApp" class="hidden">
 
 <!-- Header -->
 <header class="header">
@@ -28,7 +40,12 @@
       <div class="app-sub" data-i18n="appSub">Home Inventory</div>
     </div>
   </div>
-  <button id="langBtn" class="lang-btn">🌐 <span id="langLabel">हिन्दी</span></button>
+  <div class="header-right">
+    <button id="logoutBtn" class="profile-indicator-btn">
+      <span id="profileIndicator">👤 Profile</span>
+    </button>
+    <button id="langBtn" class="lang-btn">🌐 <span id="langLabel">हिन्दी</span></button>
+  </div>
 </header>
 
 <!-- Stats Bar -->
@@ -48,32 +65,26 @@
 </div>
 
 <!-- Tabs -->
-<nav class="tabs">
-  <button class="tab active" id="tabInventory">
-    📦 <span data-i18n="inventory">Inventory</span>
-  </button>
-  <button class="tab" id="tabShopping">
-    🛒 <span data-i18n="shoppingList">Shopping</span>
-    <span class="badge" id="shoppingBadge" style="display:none">0</span>
-  </button>
+<nav class="tabs tabs-scroll">
+  <button class="tab active" id="tabInventory">📦 <span data-i18n="inventory">Inventory</span></button>
+  <button class="tab" id="tabShopping">🛒 <span data-i18n="shoppingList">Shopping</span><span class="badge" id="shoppingBadge" style="display:none">0</span></button>
+  <button class="tab" id="tabBudget">💰 <span data-i18n="budgetTab">Budget</span></button>
+  <button class="tab" id="tabExpiry">⏰ <span data-i18n="expiryTab">Expiry</span></button>
+  <button class="tab" id="tabReports">📊 <span data-i18n="reportsTab">Reports</span></button>
 </nav>
 
 <!-- Add Item Bar -->
 <div class="add-bar" id="addBar">
-  <input type="text" id="newItemInput" class="add-input"
-    data-i18n-placeholder="addItemPlaceholder"
-    placeholder="सामान का नाम लिखें..." />
-  <input type="number" id="newItemQty" class="add-input-sm" value="1" min="1" title="Quantity" />
-  <input type="number" id="newItemMin" class="add-input-sm" value="1" min="1" title="Min Qty" />
+  <input type="text" id="newItemInput" class="add-input" data-i18n-placeholder="addItemPlaceholder" placeholder="सामान का नाम लिखें..."/>
+  <input type="number" id="newItemQty" class="add-input-sm" value="1" min="1"/>
+  <input type="number" id="newItemMin" class="add-input-sm" value="1" min="1"/>
   <button id="addItemBtn" class="btn-add">＋</button>
 </div>
 
-<!-- Toolbar: Search + Sort + Scan/Voice -->
+<!-- Toolbar -->
 <div class="tool-bar" id="toolBar">
   <div class="search-wrap">
-    <input type="search" id="searchInput" class="search-input"
-      data-i18n-placeholder="searchPlaceholder"
-      placeholder="खोजें..." />
+    <input type="search" id="searchInput" class="search-input" data-i18n-placeholder="searchPlaceholder" placeholder="खोजें..."/>
   </div>
   <div class="sort-btns">
     <button class="sort-btn active" data-sort="name" data-i18n="sortName">नाम</button>
@@ -85,7 +96,7 @@
   </div>
 </div>
 
-<!-- Inventory Tab -->
+<!-- ===== INVENTORY TAB ===== -->
 <main id="inventoryTab" class="tab-content">
   <div id="inventoryList" class="item-list"></div>
   <div id="emptyInventory" class="empty-msg hidden">
@@ -94,24 +105,94 @@
   </div>
 </main>
 
-<!-- Shopping Tab -->
+<!-- ===== SHOPPING TAB ===== -->
 <main id="shoppingTab" class="tab-content hidden">
   <div id="shoppingList" class="item-list"></div>
   <div id="emptyShopping" class="empty-msg hidden">
     <span class="empty-icon">🎉</span>
-    <p data-i18n="shoppingEmpty">All stocked up! Nothing to buy.</p>
+    <p data-i18n="shoppingEmpty">All stocked up!</p>
   </div>
   <div id="shoppingActions" class="shopping-actions hidden">
-    <button id="whatsappBtn" class="btn-whatsapp">
-      📲 <span data-i18n="shareWhatsApp">Share on WhatsApp</span>
-    </button>
-    <button id="clearShoppingBtn" class="btn-clear">
-      🗑️ <span data-i18n="clearAll">Clear All</span>
-    </button>
+    <button id="whatsappBtn" class="btn-whatsapp">📲 <span data-i18n="shareWhatsApp">Share on WhatsApp</span></button>
+    <button id="clearShoppingBtn" class="btn-clear">🗑️ <span data-i18n="clearAll">Clear All</span></button>
   </div>
 </main>
 
-<!-- Language Modal -->
+<!-- ===== BUDGET TAB ===== -->
+<main id="budgetTab" class="tab-content hidden">
+  <div class="budget-header-cards">
+    <div class="budget-card purple">
+      <div class="bc-label" data-i18n="monthlyBudget">Monthly Budget</div>
+      <div class="bc-num" id="budgetTotalNum">₹0</div>
+    </div>
+    <div class="budget-card orange">
+      <div class="bc-label" data-i18n="totalSpent">Total Spent</div>
+      <div class="bc-num" id="budgetSpentNum">₹0</div>
+    </div>
+    <div class="budget-card green">
+      <div class="bc-label" data-i18n="budgetLeft">Budget Left</div>
+      <div class="bc-num" id="budgetLeftNum">₹0</div>
+    </div>
+  </div>
+  <div class="budget-progress-wrap">
+    <div class="budget-progress-bar"><div id="budgetProgress" style="width:0%"></div></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">🎯 <span data-i18n="setBudget">Set Budget</span></div>
+    <div class="budget-set-row">
+      <input type="number" id="budgetSetInput" class="add-input" placeholder="₹ Monthly budget..." min="0"/>
+      <button id="setBudgetBtn" class="btn-purple" data-i18n="setBudget">Set</button>
+    </div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">➕ <span data-i18n="addExpense">Add Expense</span></div>
+    <div class="expense-form">
+      <input type="text" id="expName" class="add-input" data-i18n-placeholder="expenseItem" placeholder="Saamaan ka naam..."/>
+      <input type="number" id="expAmount" class="add-input" placeholder="₹ Amount" min="0"/>
+      <div class="exp-row2">
+        <input type="date" id="expDate" class="add-input"/>
+        <select id="expCategory" class="add-input">
+          <option value="grocery" data-i18n="catGrocery">Grocery</option>
+          <option value="veg" data-i18n="catVeg">Vegetables</option>
+          <option value="dairy" data-i18n="catDairy">Dairy</option>
+          <option value="cleaning" data-i18n="catCleaning">Cleaning</option>
+          <option value="other" data-i18n="catOther">Other</option>
+        </select>
+        <button id="addExpenseBtn" class="btn-add">＋</button>
+      </div>
+    </div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">📊 Category Breakdown</div>
+    <div id="catBreakdown"></div>
+  </div>
+  <div class="section-card">
+    <div class="section-title">🧾 This Month's Expenses</div>
+    <div id="expenseList"></div>
+  </div>
+</main>
+
+<!-- ===== EXPIRY TAB ===== -->
+<main id="expiryTab" class="tab-content hidden">
+  <div class="section-card">
+    <div class="section-title">➕ <span data-i18n="addExpiry">Add Expiry Item</span></div>
+    <div class="expiry-form">
+      <input type="text" id="expiryNameInput" class="add-input" data-i18n-placeholder="expiryName" placeholder="Saamaan ka naam..."/>
+      <input type="date" id="expiryDateInput" class="add-input"/>
+      <button id="addExpiryBtn" class="btn-add">＋</button>
+    </div>
+  </div>
+  <div id="expiryList" class="item-list" style="margin-top:10px"></div>
+</main>
+
+<!-- ===== REPORTS TAB ===== -->
+<main id="reportsTab" class="tab-content hidden">
+  <div id="reportsContainer"></div>
+</main>
+
+</div><!-- end mainApp -->
+
+<!-- ===== LANGUAGE MODAL ===== -->
 <div id="langModal" class="modal hidden">
   <div class="modal-box">
     <div class="modal-handle"></div>
@@ -121,49 +202,80 @@
   </div>
 </div>
 
-<!-- Camera Scan Modal -->
+<!-- ===== SCAN MODAL ===== -->
 <div id="scanModal" class="modal hidden">
   <div class="modal-box">
     <div class="modal-handle"></div>
     <div class="modal-title" data-i18n="scanTitle">Scan Item</div>
-    <div class="modal-sub" data-i18n="scanSub">Point camera at item or barcode</div>
+    <div class="modal-sub" data-i18n="scanSub">Point camera at barcode</div>
     <button class="btn-close" id="closeScanModal">✕</button>
-
     <div class="scan-video-wrap">
       <video id="scanVideo" autoplay playsinline muted></video>
-      <div class="scan-overlay">
-        <div class="scan-frame">
-          <div class="scan-corners">
-            <span></span><span></span><span></span><span></span>
-          </div>
-        </div>
-      </div>
+      <div class="scan-overlay"><div class="scan-frame"><div class="scan-line"></div><div class="scan-corners"><span></span><span></span><span></span><span></span></div></div></div>
     </div>
-
     <div id="scanStatus" data-i18n="scanDetecting">Detecting...</div>
     <div id="scanResult"></div>
-
-    <!-- FIX: Manual input and Add button are separate — no data-name conflict -->
     <div class="scan-manual">
-      <input type="text" id="scanManualInput"
-        data-i18n-placeholder="scanManualPlaceholder"
-        placeholder="या यहाँ नाम लिखें..." />
-      <button id="scanAddBtn" disabled style="opacity:0.5" data-i18n="addToInventory">
-        सूची में जोड़ें
-      </button>
+      <input type="text" id="scanManualInput" data-i18n-placeholder="scanManualPlaceholder" placeholder="Ya yahan naam likhein..."/>
+      <button id="scanAddBtn" disabled style="opacity:0.5" data-i18n="addToInventory">जोड़ें</button>
+    </div>
+    <div class="ocr-section">
+      <p>📸 Photo kheeench ke naam automatically padhein!</p>
+      <input type="file" id="ocrFileInput" accept="image/*" capture="environment" style="display:none"/>
+      <button class="btn-ocr" id="ocrBtn">📷 Photo se naam padhein</button>
+      <div id="ocrStatus"></div>
     </div>
   </div>
 </div>
 
-<!-- Scripts: i18n first, then app logic -->
+<!-- ===== PIN MODAL ===== -->
+<div id="pinModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="pinModalName">Profile</div>
+    <div class="modal-sub" data-i18n="enterPin">Enter PIN</div>
+    <div class="pin-input-wrap">
+      <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="••••" inputmode="numeric"/>
+    </div>
+    <div id="pinError" class="pin-error"></div>
+    <div class="pin-actions">
+      <button id="cancelPinBtn" class="btn-cancel-edit" data-i18n="cancel">Cancel</button>
+      <button id="pinConfirmBtn" class="btn-purple" data-i18n="createBtn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== CREATE PROFILE MODAL ===== -->
+<div id="createProfileModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="createProfile">Create Profile</div>
+    <div class="create-profile-form">
+      <div class="form-group">
+        <label data-i18n="profileName">Your Name</label>
+        <input type="text" id="newProfileName" class="add-input" placeholder="Naam likhein..."/>
+      </div>
+      <div class="form-group">
+        <label data-i18n="profileEmoji">Choose Avatar</label>
+        <div class="avatar-grid" id="avatarGrid"></div>
+      </div>
+      <div class="form-group">
+        <label data-i18n="pinLabel">4-digit PIN (optional)</label>
+        <input type="password" id="newProfilePin" class="add-input pin-create-input" maxlength="4" placeholder="•••• (Optional)" inputmode="numeric"/>
+      </div>
+      <div class="pin-actions">
+        <button id="cancelCreateBtn" class="btn-cancel-edit" data-i18n="cancel">Cancel</button>
+        <button id="confirmCreateBtn" class="btn-purple" data-i18n="createBtn">Create</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="i18n.js"></script>
 <script src="app.js"></script>
 <script>
-  // Service Worker registration
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('service-worker.js').catch(() => {});
-    });
+  if('serviceWorker' in navigator){
+    window.addEventListener('load',()=>navigator.serviceWorker.register('service-worker.js').catch(()=>{}));
   }
 </script>
 </body>

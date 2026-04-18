@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#059669" />
+  <meta name="description" content="Smart Serve — Ghar ka Inventory Manager" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="manifest.json" />
+  <title>Smart Serve</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- PWA Install Banner -->
+<div id="installBanner" style="display:none">
+  <span>📱 Install Smart Serve on your phone!</span>
+  <button id="installBtn">Install App</button>
+</div>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-left">
+    <span class="logo">🏠</span>
+    <div>
+      <div class="app-title" data-i18n="appTitle">Smart Serve</div>
+      <div class="app-sub" data-i18n="appSub">Home Inventory</div>
+    </div>
+  </div>
+  <button id="langBtn" class="lang-btn">🌐 <span id="langLabel">हिन्दी</span></button>
+</header>
+
+<!-- Stats Bar -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <div class="stat-num" id="statTotal">0</div>
+    <div class="stat-label" data-i18n="statsTotal">Total Items</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="statLow">0</div>
+    <div class="stat-label" data-i18n="statsLow">Low Stock</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num" id="statOut">0</div>
+    <div class="stat-label" data-i18n="statsOut">Need to Buy</div>
+  </div>
+</div>
+
+<!-- Tabs -->
+<nav class="tabs">
+  <button class="tab active" id="tabInventory">
+    📦 <span data-i18n="inventory">Inventory</span>
+  </button>
+  <button class="tab" id="tabShopping">
+    🛒 <span data-i18n="shoppingList">Shopping</span>
+    <span class="badge" id="shoppingBadge" style="display:none">0</span>
+  </button>
+</nav>
+
+<!-- Add Item Bar -->
+<div class="add-bar" id="addBar">
+  <input type="text" id="newItemInput" class="add-input"
+    data-i18n-placeholder="addItemPlaceholder"
+    placeholder="सामान का नाम लिखें..." />
+  <input type="number" id="newItemQty" class="add-input-sm" value="1" min="1" title="Quantity" />
+  <input type="number" id="newItemMin" class="add-input-sm" value="1" min="1" title="Min Qty" />
+  <button id="addItemBtn" class="btn-add">＋</button>
+</div>
+
+<!-- Toolbar: Search + Sort + Scan/Voice -->
+<div class="tool-bar" id="toolBar">
+  <div class="search-wrap">
+    <input type="search" id="searchInput" class="search-input"
+      data-i18n-placeholder="searchPlaceholder"
+      placeholder="खोजें..." />
+  </div>
+  <div class="sort-btns">
+    <button class="sort-btn active" data-sort="name" data-i18n="sortName">नाम</button>
+    <button class="sort-btn" data-sort="qty" data-i18n="sortQty">मात्रा</button>
+  </div>
+  <div class="action-btns">
+    <button class="btn-scan" id="scanBtn">📷 <span data-i18n="scanBtn">स्कैन</span></button>
+    <button class="btn-voice" id="voiceBtn">🎤</button>
+  </div>
+</div>
+
+<!-- Inventory Tab -->
+<main id="inventoryTab" class="tab-content">
+  <div id="inventoryList" class="item-list"></div>
+  <div id="emptyInventory" class="empty-msg hidden">
+    <span class="empty-icon">📦</span>
+    <p data-i18n="inventoryEmpty">No items yet. Add your first item above!</p>
+  </div>
+</main>
+
+<!-- Shopping Tab -->
+<main id="shoppingTab" class="tab-content hidden">
+  <div id="shoppingList" class="item-list"></div>
+  <div id="emptyShopping" class="empty-msg hidden">
+    <span class="empty-icon">🎉</span>
+    <p data-i18n="shoppingEmpty">All stocked up! Nothing to buy.</p>
+  </div>
+  <div id="shoppingActions" class="shopping-actions hidden">
+    <button id="whatsappBtn" class="btn-whatsapp">
+      📲 <span data-i18n="shareWhatsApp">Share on WhatsApp</span>
+    </button>
+    <button id="clearShoppingBtn" class="btn-clear">
+      🗑️ <span data-i18n="clearAll">Clear All</span>
+    </button>
+  </div>
+</main>
+
+<!-- Language Modal -->
+<div id="langModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="selectLanguage">Choose Language</div>
+    <button class="btn-close" id="closeLangModal">✕</button>
+    <div class="lang-grid" id="langGrid"></div>
+  </div>
+</div>
+
+<!-- Camera Scan Modal -->
+<div id="scanModal" class="modal hidden">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title" data-i18n="scanTitle">Scan Item</div>
+    <div class="modal-sub" data-i18n="scanSub">Point camera at item or barcode</div>
+    <button class="btn-close" id="closeScanModal">✕</button>
+
+    <div class="scan-video-wrap">
+      <video id="scanVideo" autoplay playsinline muted></video>
+      <div class="scan-overlay">
+        <div class="scan-frame">
+          <div class="scan-corners">
+            <span></span><span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="scanStatus" data-i18n="scanDetecting">Detecting...</div>
+    <div id="scanResult"></div>
+
+    <!-- FIX: Manual input and Add button are separate — no data-name conflict -->
+    <div class="scan-manual">
+      <input type="text" id="scanManualInput"
+        data-i18n-placeholder="scanManualPlaceholder"
+        placeholder="या यहाँ नाम लिखें..." />
+      <button id="scanAddBtn" disabled style="opacity:0.5" data-i18n="addToInventory">
+        सूची में जोड़ें
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts: i18n first, then app logic -->
+<script src="i18n.js"></script>
+<script src="app.js"></script>
+<script>
+  // Service Worker registration
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('service-worker.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>

@@ -27,14 +27,14 @@ function renderProfiles(){
   grid.innerHTML='';
   profiles.forEach(p=>{
     const card=document.createElement('div');
-    card.className='profile-card';
-    card.innerHTML=`<div class="profile-avatar">${p.avatar}</div><div class="profile-name">${escapeHtml(p.name)}</div><div class="profile-pin-badge ${p.pin?'':'open'}">${p.pin?'🔒 PIN':'🔓 Open'}</div>`;
+    card.className='ps-card';
+    card.innerHTML=`<span class="ps-avatar">${p.avatar}</span><div class="ps-name">${escapeHtml(p.name)}</div><div class="ps-lock ${p.pin?'':'open'}">${p.pin?'🔒 PIN':'🔓 Open'}</div>`;
     card.onclick=()=>selectProfile(p);
     grid.appendChild(card);
   });
   const addCard=document.createElement('div');
-  addCard.className='profile-card profile-add';
-  addCard.innerHTML=`<div class="profile-avatar">➕</div><div class="profile-name">${t('createProfile')}</div>`;
+  addCard.className='ps-card ps-add';
+  addCard.innerHTML=`<span class="ps-avatar">➕</span><div class="ps-name">${t('createProfile')}</div>`;
   addCard.onclick=openCreateProfile;
   grid.appendChild(addCard);
 }

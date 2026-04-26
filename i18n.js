@@ -1,4 +1,5 @@
-// i18n.js — Smart Serve · Enhanced Edition
+// i18n.js — Smart Serve · Fixed Edition
+// Default language: English. All dynamic strings go through t().
 
 const LANGUAGES = [
   { code: 'en', label: 'English',   nativeLabel: 'English',   voice: 'en-IN'  },
@@ -37,7 +38,7 @@ const TRANSLATIONS = {
     searchPlaceholder:'Search items...',
     statsTotal:'Total Items', statsLow:'Low Stock', statsOut:'Need to Buy',
     minQtyLabel:'Min Qty', editItem:'Edit', saveEdit:'Save', cancel:'Cancel',
-    unitPcs:'Pcs', unitKg:'Kg', unitLtr:'Ltr', unitGm:'Gm',
+    unitPcs:'Pcs', unitKg:'Kg', unitLtr:'Ltr', unitGm:'Gm', unitPkt:'Pkt',
     unitLabel:'Unit',
     welcomeTitle:'Welcome to Smart Serve',
     welcomeSub:'Select your profile to continue',
@@ -82,7 +83,56 @@ const TRANSLATIONS = {
     cameraCapture:'📷 Open Camera',
     shareLink:'Share App Link',
     installGuide:'Install Guide',
+    // Budget page strings
+    budgetSetPlaceholder:'₹ Monthly budget...',
+    expenseNamePlaceholder:'Item name...',
+    expenseAmtPlaceholder:'₹ Amount',
+    catBreakdownTitle:'Category Breakdown',
+    thisMonth:'This Month',
+    noBudgetData:'No expenses this month',
+    noCatData:'No expenses yet',
+    // Expiry strings
+    expiryNamePlaceholder:'Item name...',
+    // Profile strings
+    profileNamePlaceholder:'Enter your name...',
+    profilePinPlaceholder:'•••• (Optional)',
+    atLeastOneProfile:'At least one profile is needed!',
+    deleteProfileConfirm:'Delete this profile?',
+    profileDeleted:'Profile deleted',
+    profileCreated:'✓ Profile created!',
+    nameRequired:'Name is required!',
+    pinFourDigits:'PIN must be 4 digits!',
+    wrongPin:'❌ Wrong PIN!',
+    // Voice
+    voiceChromeOnly:'Voice works only in Chrome',
+    voicePrompt:'🎤 Say the item name...',
+    // Scan
+    cameraReady:'📷 Camera ready — Show barcode or product',
+    cameraError:'❌ Camera not available — upload a photo below',
+    lookingUp:'🔍 Looking up product…',
+    unknownProduct:'📦 Unknown — please edit the name',
+    // Actions
+    confirm:'Confirm',
+    switchProfile:'Switch Profile',
+    // Install
+    installPrompt:'📱 Install Smart Serve!',
+    installFallback:'Install via your browser — check the steps above',
+    installing:'✓ App is installing!',
+    // Sharing
+    linkCopied:'✓ Link copied!',
+    linkCopyFail:'Link not copied',
+    // Reports
+    noExpenses:'No expenses',
+    spent:'spent',
+    budget:'Budget',
+    // Units
+    unitLabelPcs:'pcs',
+    unitLabelKg:'kg',
+    unitLabelLtr:'L',
+    unitLabelGm:'g',
+    unitLabelPkt:'pkt',
   },
+
   hi: {
     appTitle:'स्मार्ट सर्व', appSub:'घर का सामान',
     inventory:'सामान', shoppingList:'खरीदारी',
@@ -105,7 +155,7 @@ const TRANSLATIONS = {
     searchPlaceholder:'खोजें...',
     statsTotal:'कुल सामान', statsLow:'कम स्टॉक', statsOut:'खरीदना है',
     minQtyLabel:'न्यूनतम', editItem:'बदलें', saveEdit:'सेव करें', cancel:'रद्द करें',
-    unitPcs:'पीस', unitKg:'किलो', unitLtr:'लीटर', unitGm:'ग्राम',
+    unitPcs:'पीस', unitKg:'किलो', unitLtr:'लीटर', unitGm:'ग्राम', unitPkt:'पैकेट',
     unitLabel:'इकाई',
     welcomeTitle:'Smart Serve में आपका स्वागत है',
     welcomeSub:'जारी रखने के लिए अपनी प्रोफ़ाइल चुनें',
@@ -150,7 +200,46 @@ const TRANSLATIONS = {
     cameraCapture:'📷 कैमरा खोलें',
     shareLink:'ऐप लिंक शेयर करें',
     installGuide:'इंस्टॉल करें',
+    budgetSetPlaceholder:'₹ मासिक बजट...',
+    expenseNamePlaceholder:'सामान का नाम...',
+    expenseAmtPlaceholder:'₹ राशि',
+    catBreakdownTitle:'श्रेणी विवरण',
+    thisMonth:'इस महीने',
+    noBudgetData:'इस महीने कोई खर्च नहीं',
+    noCatData:'अभी कोई खर्च नहीं',
+    expiryNamePlaceholder:'सामान का नाम...',
+    profileNamePlaceholder:'नाम लिखें...',
+    profilePinPlaceholder:'•••• (छोड़ सकते हैं)',
+    atLeastOneProfile:'कम से कम एक प्रोफ़ाइल ज़रूरी है!',
+    deleteProfileConfirm:'इस प्रोफ़ाइल को हटाएं?',
+    profileDeleted:'प्रोफ़ाइल हटा दी',
+    profileCreated:'✓ प्रोफ़ाइल बना दी!',
+    nameRequired:'नाम लिखना ज़रूरी है!',
+    pinFourDigits:'PIN 4 नंबर का होना चाहिए!',
+    wrongPin:'❌ गलत PIN!',
+    voiceChromeOnly:'आवाज़ सिर्फ Chrome में काम करती है',
+    voicePrompt:'🎤 सामान का नाम बोलें...',
+    cameraReady:'📷 कैमरा तैयार — बारकोड या प्रोडक्ट दिखाएं',
+    cameraError:'❌ कैमरा नहीं मिला — नीचे फोटो अपलोड करें',
+    lookingUp:'🔍 प्रोडक्ट खोज रहा है…',
+    unknownProduct:'📦 अज्ञात — नाम बदलें',
+    confirm:'पुष्टि करें',
+    switchProfile:'प्रोफ़ाइल बदलें',
+    installPrompt:'📱 Smart Serve इंस्टॉल करें!',
+    installFallback:'ब्राउज़र से इंस्टॉल करें — ऊपर के स्टेप्स देखें',
+    installing:'✓ ऐप इंस्टॉल हो रही है!',
+    linkCopied:'✓ लिंक कॉपी हुआ!',
+    linkCopyFail:'लिंक कॉपी नहीं हुआ',
+    noExpenses:'कोई खर्च नहीं',
+    spent:'खर्च हुआ',
+    budget:'बजट',
+    unitLabelPcs:'पीस',
+    unitLabelKg:'किलो',
+    unitLabelLtr:'लीटर',
+    unitLabelGm:'ग्राम',
+    unitLabelPkt:'पैकेट',
   },
+
   pa: {
     appTitle:'ਸਮਾਰਟ ਸਰਵ', appSub:'ਘਰ ਦਾ ਸਾਮਾਨ',
     inventory:'ਸਾਮਾਨ', shoppingList:'ਖਰੀਦਾਰੀ',
@@ -173,7 +262,7 @@ const TRANSLATIONS = {
     searchPlaceholder:'ਖੋਜੋ...',
     statsTotal:'ਕੁੱਲ ਸਾਮਾਨ', statsLow:'ਘੱਟ ਸਟਾਕ', statsOut:'ਖਰੀਦਣਾ ਹੈ',
     minQtyLabel:'ਘੱਟੋ ਘੱਟ', editItem:'ਬਦਲੋ', saveEdit:'ਸੇਵ', cancel:'ਰੱਦ',
-    unitPcs:'ਪੀਸ', unitKg:'ਕਿਲੋ', unitLtr:'ਲੀਟਰ', unitGm:'ਗ੍ਰਾਮ',
+    unitPcs:'ਪੀਸ', unitKg:'ਕਿਲੋ', unitLtr:'ਲੀਟਰ', unitGm:'ਗ੍ਰਾਮ', unitPkt:'ਪੈਕੇਟ',
     unitLabel:'ਇਕਾਈ',
     welcomeTitle:'Smart Serve ਵਿੱਚ ਸੁਆਗਤ ਹੈ',
     welcomeSub:'ਜਾਰੀ ਰੱਖਣ ਲਈ ਪ੍ਰੋਫ਼ਾਈਲ ਚੁਣੋ',
@@ -198,30 +287,59 @@ const TRANSLATIONS = {
     installApp:'ਐਪ ਇੰਸਟਾਲ ਕਰੋ', voiceHelp:'ਆਵਾਜ਼ ਨਾਲ ਜੋੜੋ',
     voiceHelpText:'ਸਾਮਾਨ ਦਾ ਨਾਮ ਬੋਲੋ', photoCapture:'📸 ਫੋਟੋ ਲਓ',
     cameraCapture:'📷 ਕੈਮਰਾ ਖੋਲੋ', shareLink:'ਲਿੰਕ ਸਾਂਝਾ ਕਰੋ', installGuide:'ਇੰਸਟਾਲ ਕਰੋ',
+    budgetSetPlaceholder:'₹ ਮਾਸਿਕ ਬਜਟ...', expenseNamePlaceholder:'ਸਾਮਾਨ ਦਾ ਨਾਮ...',
+    expenseAmtPlaceholder:'₹ ਰਾਸ਼ੀ', catBreakdownTitle:'ਸ਼੍ਰੇਣੀ ਵੇਰਵਾ',
+    thisMonth:'ਇਸ ਮਹੀਨੇ', noBudgetData:'ਇਸ ਮਹੀਨੇ ਕੋਈ ਖਰਚ ਨਹੀਂ', noCatData:'ਅਜੇ ਕੋਈ ਖਰਚ ਨਹੀਂ',
+    expiryNamePlaceholder:'ਸਾਮਾਨ ਦਾ ਨਾਮ...', profileNamePlaceholder:'ਨਾਮ ਲਿਖੋ...',
+    profilePinPlaceholder:'•••• (ਛੱਡ ਸਕਦੇ ਹੋ)',
+    atLeastOneProfile:'ਘੱਟੋ ਘੱਟ ਇੱਕ ਪ੍ਰੋਫ਼ਾਈਲ ਚਾਹੀਦੀ ਹੈ!',
+    deleteProfileConfirm:'ਇਹ ਪ੍ਰੋਫ਼ਾਈਲ ਮਿਟਾਓ?',
+    profileDeleted:'ਪ੍ਰੋਫ਼ਾਈਲ ਮਿਟਾਈ', profileCreated:'✓ ਪ੍ਰੋਫ਼ਾਈਲ ਬਣਾਈ!',
+    nameRequired:'ਨਾਮ ਲਿਖਣਾ ਜ਼ਰੂਰੀ ਹੈ!', pinFourDigits:'PIN 4 ਨੰਬਰ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ!',
+    wrongPin:'❌ ਗਲਤ PIN!', voiceChromeOnly:'ਆਵਾਜ਼ ਸਿਰਫ਼ Chrome ਵਿੱਚ ਕੰਮ ਕਰਦੀ ਹੈ',
+    voicePrompt:'🎤 ਸਾਮਾਨ ਦਾ ਨਾਮ ਬੋਲੋ...', cameraReady:'📷 ਕੈਮਰਾ ਤਿਆਰ — ਬਾਰਕੋਡ ਦਿਖਾਓ',
+    cameraError:'❌ ਕੈਮਰਾ ਨਹੀਂ ਮਿਲਿਆ', lookingUp:'🔍 ਪ੍ਰੋਡਕਟ ਲੱਭ ਰਿਹਾ ਹੈ…',
+    unknownProduct:'📦 ਅਣਜਾਣ — ਨਾਮ ਬਦਲੋ', confirm:'ਪੁਸ਼ਟੀ ਕਰੋ', switchProfile:'ਪ੍ਰੋਫ਼ਾਈਲ ਬਦਲੋ',
+    installPrompt:'📱 Smart Serve ਇੰਸਟਾਲ ਕਰੋ!', installFallback:'ਬ੍ਰਾਊਜ਼ਰ ਤੋਂ ਇੰਸਟਾਲ ਕਰੋ',
+    installing:'✓ ਐਪ ਇੰਸਟਾਲ ਹੋ ਰਹੀ ਹੈ!', linkCopied:'✓ ਲਿੰਕ ਕਾਪੀ ਹੋਇਆ!',
+    linkCopyFail:'ਲਿੰਕ ਕਾਪੀ ਨਹੀਂ ਹੋਇਆ', noExpenses:'ਕੋਈ ਖਰਚ ਨਹੀਂ',
+    spent:'ਖਰਚ ਹੋਇਆ', budget:'ਬਜਟ',
+    unitLabelPcs:'ਪੀਸ', unitLabelKg:'ਕਿਲੋ', unitLabelLtr:'ਲੀਟਰ', unitLabelGm:'ਗ੍ਰਾਮ', unitLabelPkt:'ਪੈਕੇਟ',
   },
 };
 
-// Fill missing languages with English fallback
+// Fill missing language codes with English as fallback
 ['ta','te','kn','ml','mr','gu','bn','or'].forEach(code => {
   TRANSLATIONS[code] = { ...TRANSLATIONS['en'] };
 });
 
-let currentLang = localStorage.getItem('ss_lang') || 'hi';
+// DEFAULT IS ENGLISH — change to 'hi' for Hindi default
+let currentLang = localStorage.getItem('ss_lang') || 'en';
 
 function t(key) {
-  return (TRANSLATIONS[currentLang] && TRANSLATIONS[currentLang][key])
-    || TRANSLATIONS['en'][key] || key;
+  const lang = TRANSLATIONS[currentLang] || TRANSLATIONS['en'];
+  return lang[key] || TRANSLATIONS['en'][key] || key;
 }
 
 function setLanguage(code) {
   currentLang = code;
   localStorage.setItem('ss_lang', code);
+  document.documentElement.lang = code;
   applyTranslations();
+  // Re-render everything after language change
+  if (typeof renderAll === 'function') renderAll();
+  // Also re-render active tab-specific content
+  if (typeof activeTab !== 'undefined') {
+    if (activeTab === 'budget' && typeof renderBudget === 'function') renderBudget();
+    if (activeTab === 'expiry' && typeof renderExpiry === 'function') renderExpiry();
+    if (activeTab === 'reports' && typeof renderReports === 'function') renderReports();
+    if (activeTab === 'family' && typeof renderFamily === 'function') renderFamily();
+  }
 }
 
 function applyTranslations() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
-    if (el.id === 'scanAddBtn') return;
+    if (el.id === 'scanAddBtn') return; // skip — managed by JS
     el.textContent = t(el.dataset.i18n);
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
@@ -233,4 +351,18 @@ function applyTranslations() {
     if (lbl) lbl.textContent = lang.nativeLabel;
   }
   document.documentElement.lang = currentLang;
+
+  // Update dynamic placeholders that aren't data-i18n-placeholder
+  const budgetInput = document.getElementById('budgetSetInput');
+  if (budgetInput) budgetInput.placeholder = t('budgetSetPlaceholder');
+  const expName = document.getElementById('expName');
+  if (expName) expName.placeholder = t('expenseNamePlaceholder');
+  const expAmount = document.getElementById('expAmount');
+  if (expAmount) expAmount.placeholder = t('expenseAmtPlaceholder');
+  const expiryNameInput = document.getElementById('expiryNameInput');
+  if (expiryNameInput) expiryNameInput.placeholder = t('expiryNamePlaceholder');
+  const newProfileName = document.getElementById('newProfileName');
+  if (newProfileName) newProfileName.placeholder = t('profileNamePlaceholder');
+  const newProfilePin = document.getElementById('newProfilePin');
+  if (newProfilePin) newProfilePin.placeholder = t('profilePinPlaceholder');
 }

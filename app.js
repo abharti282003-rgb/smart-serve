@@ -1,65 +1,27 @@
-// app.js — Smart Serve · Enhanced Major Project Edition
+// app.js — Smart Serve · Language-Fixed Edition
 
 const EMOJI_MAP={
-  flour: '🌾',
-  refined_flour: '🌾',
-  rice: '🍚',
-  lentils: '🫘',
-  kidney_beans: '🫘',
-  chickpeas: '🫘',
-  milk: '🥛',
-  yogurt: '🥣',
-  cottage_cheese: '🧀',
-  clarified_butter: '🧈',
-  butter: '🧈',
-  potato: '🥔',
-  onion: '🧅',
-  tomato: '🍅',
-  garlic: '🧄',
-  ginger: '🫚',
-  chili: '🌶️',
-  carrot: '🥕',
-  spinach: '🥬',
-  cauliflower: '🥦',
-  eggplant: '🍆',
-  peas: '🫛',
-  lemon: '🍋',
-  apple: '🍎',
-  banana: '🍌',
-  mango: '🥭',
-  cooking_oil: '🫙',
-  salt: '🧂',
-  sugar: '🍬',
-  tea: '🍵',
-  coffee: '☕',
-  turmeric: '🟡',
-  spices: '🌿',
-  soap: '🧼',
-  shampoo: '🧴',
-  toothpaste: '🦷',
-  detergent: '🧹',
-  water: '💧',
-  juice: '🧃',
-  biscuit: '🍪',
-  bread: '🍞',
-  flatbread: '🫓',
-  noodles: '🍜',
-  egg: '🥚',
-  chicken: '🍗',
-  fish: '🐟',
-  vegetables: '🥕',
-  okra: '🫛',
-  bottle_gourd: '🥒',
-  bitter_gourd: '🥒',
-  fenugreek_leaves: '🌿',
-  leafy_greens: '🥬'
+  flour:'🌾',refined_flour:'🌾',rice:'🍚',lentils:'🫘',kidney_beans:'🫘',chickpeas:'🫘',
+  milk:'🥛',yogurt:'🥣',cottage_cheese:'🧀',clarified_butter:'🧈',butter:'🧈',
+  potato:'🥔',onion:'🧅',tomato:'🍅',garlic:'🧄',ginger:'🫚',chili:'🌶️',
+  carrot:'🥕',spinach:'🥬',cauliflower:'🥦',eggplant:'🍆',peas:'🫛',
+  lemon:'🍋',apple:'🍎',banana:'🍌',mango:'🥭',cooking_oil:'🫙',
+  salt:'🧂',sugar:'🍬',tea:'🍵',coffee:'☕',turmeric:'🟡',spices:'🌿',
+  soap:'🧼',shampoo:'🧴',toothpaste:'🦷',detergent:'🧹',water:'💧',
+  juice:'🧃',biscuit:'🍪',bread:'🍞',flatbread:'🫓',noodles:'🍜',
+  egg:'🥚',chicken:'🍗',fish:'🐟',vegetables:'🥕',okra:'🫛',
+  bottle_gourd:'🥒',bitter_gourd:'🥒',fenugreek_leaves:'🌿',leafy_greens:'🥬'
 };
 const PROFILE_AVATARS=['👨','👩','👴','👵','👦','👧','🧑','😊','🌟','🏠','👑','🦁','🧒','👶','🧔','👱','🧕','🙋'];
-const UNITS = ['pcs','kg','ltr','gm','pkt'];
+const UNITS=['pcs','kg','ltr','gm','pkt'];
 
-function getEmoji(name){const key=name.toLowerCase().trim();if(EMOJI_MAP[key])return EMOJI_MAP[key];for(const k of Object.keys(EMOJI_MAP)){if(key.includes(k)||k.includes(key))return EMOJI_MAP[k];}return '📦';}
+function getEmoji(name){
+  const key=name.toLowerCase().trim();
+  if(EMOJI_MAP[key])return EMOJI_MAP[key];
+  for(const k of Object.keys(EMOJI_MAP)){if(key.includes(k)||k.includes(key))return EMOJI_MAP[k];}
+  return '📦';
+}
 
-// Default items with units
 const DEFAULT_ITEMS=[
   {name:'flour',qty:5,minQty:2,unit:'kg',emoji:'🌾'},
   {name:'milk',qty:2,minQty:1,unit:'ltr',emoji:'🥛'},
@@ -69,25 +31,47 @@ let inventory=[],shoppingList=[],expenses=[],expiryItems=[],profiles=[],currentP
 let sortMode='name',searchQuery='',editingId=null,activeTab='inventory',pendingScanName=null;
 
 function profileKey(k){return currentProfile?`ss_${currentProfile.id}_${k}`:`ss_${k}`;}
-function saveState(){if(!currentProfile)return;localStorage.setItem(profileKey('inventory'),JSON.stringify(inventory));localStorage.setItem(profileKey('shopping'),JSON.stringify(shoppingList));localStorage.setItem(profileKey('expenses'),JSON.stringify(expenses));localStorage.setItem(profileKey('expiry'),JSON.stringify(expiryItems));}
+
+function saveState(){
+  if(!currentProfile)return;
+  localStorage.setItem(profileKey('inventory'),JSON.stringify(inventory));
+  localStorage.setItem(profileKey('shopping'),JSON.stringify(shoppingList));
+  localStorage.setItem(profileKey('expenses'),JSON.stringify(expenses));
+  localStorage.setItem(profileKey('expiry'),JSON.stringify(expiryItems));
+}
+
 function loadState(){
   const si=localStorage.getItem(profileKey('inventory'));
   inventory=si?JSON.parse(si):DEFAULT_ITEMS.map((item,i)=>({id:Date.now()+i,...item,addedOn:Date.now()}));
-  // Migrate old items without unit
   inventory.forEach(item=>{if(!item.unit)item.unit='pcs';});
   shoppingList=JSON.parse(localStorage.getItem(profileKey('shopping'))||'[]');
   expenses=JSON.parse(localStorage.getItem(profileKey('expenses'))||'[]');
   expiryItems=JSON.parse(localStorage.getItem(profileKey('expiry'))||'[]');
 }
+
 function saveProfiles(){localStorage.setItem('ss_profiles',JSON.stringify(profiles));}
 function loadProfiles(){profiles=JSON.parse(localStorage.getItem('ss_profiles')||'[]');}
 
 let toastTimer;
-function showToast(msg,type=''){let toast=document.getElementById('toast');if(!toast){toast=document.createElement('div');toast.id='toast';document.body.appendChild(toast);}toast.textContent=msg;toast.className='toast show'+(type?' toast-'+type:'');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.className='toast',2800);}
+function showToast(msg,type=''){
+  let toast=document.getElementById('toast');
+  if(!toast){toast=document.createElement('div');toast.id='toast';document.body.appendChild(toast);}
+  toast.textContent=msg;
+  toast.className='toast show'+(type?' toast-'+type:'');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>{toast.className='toast';},2800);
+}
 
 // ===== PROFILE SCREEN =====
-function showProfileScreen(){document.getElementById('profileScreen').classList.remove('hidden');document.getElementById('mainApp').classList.add('hidden');renderProfiles();}
-function hideProfileScreen(){document.getElementById('profileScreen').classList.add('hidden');document.getElementById('mainApp').classList.remove('hidden');}
+function showProfileScreen(){
+  document.getElementById('profileScreen').classList.remove('hidden');
+  document.getElementById('mainApp').classList.add('hidden');
+  renderProfiles();
+}
+function hideProfileScreen(){
+  document.getElementById('profileScreen').classList.add('hidden');
+  document.getElementById('mainApp').classList.remove('hidden');
+}
 
 function renderProfiles(){
   const grid=document.getElementById('profileGrid');
@@ -95,7 +79,9 @@ function renderProfiles(){
   profiles.forEach(p=>{
     const card=document.createElement('div');
     card.className='ps-card';
-    card.innerHTML=`<span class="ps-avatar">${p.avatar}</span><div class="ps-name">${escapeHtml(p.name)}</div><div class="ps-lock ${p.pin?'':'open'}">${p.pin?'🔒 PIN':'🔓 Open'}</div>`;
+    card.innerHTML=`<span class="ps-avatar">${p.avatar}</span>
+      <div class="ps-name">${escapeHtml(p.name)}</div>
+      <div class="ps-lock ${p.pin?'':'open'}">${p.pin?'🔒 PIN':'🔓 '+t('openLabel')||'Open'}</div>`;
     card.onclick=()=>selectProfile(p);
     grid.appendChild(card);
   });
@@ -104,9 +90,17 @@ function renderProfiles(){
   addCard.innerHTML=`<span class="ps-avatar">➕</span><div class="ps-name">${t('createProfile')}</div>`;
   addCard.onclick=openCreateProfile;
   grid.appendChild(addCard);
+
+  // Update welcome text
+  const title=document.getElementById('psTitle');
+  const sub=document.getElementById('psSub');
+  if(title)title.textContent=t('welcomeTitle');
+  if(sub)sub.textContent=t('welcomeSub');
 }
 
-function selectProfile(profile){if(profile.pin){openPinModal(profile);}else{loginAs(profile);}}
+function selectProfile(profile){
+  if(profile.pin){openPinModal(profile);}else{loginAs(profile);}
+}
 
 function loginAs(profile){
   currentProfile=profile;
@@ -126,11 +120,14 @@ function openPinModal(profile){
   document.getElementById('pinModalName').textContent=profile.avatar+' '+profile.name;
   document.getElementById('pinInput').value='';
   document.getElementById('pinError').textContent='';
+  const sub=document.getElementById('pinModalSub');
+  if(sub)sub.textContent=t('enterPin');
   setTimeout(()=>document.getElementById('pinInput').focus(),100);
+  document.getElementById('pinConfirmBtn').textContent=t('confirm');
   document.getElementById('pinConfirmBtn').onclick=()=>{
     const entered=document.getElementById('pinInput').value.trim();
     if(entered===profile.pin){modal.classList.add('hidden');loginAs(profile);}
-    else{document.getElementById('pinError').textContent='❌ Wrong PIN!';document.getElementById('pinInput').value='';}
+    else{document.getElementById('pinError').textContent=t('wrongPin');document.getElementById('pinInput').value='';}
   };
 }
 
@@ -138,11 +135,16 @@ function openPinModal(profile){
 let selectedAvatar='😊';
 function openCreateProfile(){
   selectedAvatar='😊';
-  document.getElementById('createProfileModal').classList.remove('hidden');
+  const modal=document.getElementById('createProfileModal');
+  modal.classList.remove('hidden');
   renderAvatarGrid();
   document.getElementById('newProfileName').value='';
   document.getElementById('newProfilePin').value='';
+  // Update labels
+  const title=modal.querySelector('.modal-title');
+  if(title)title.textContent=t('createProfile');
 }
+
 function renderAvatarGrid(){
   const grid=document.getElementById('avatarGrid');
   grid.innerHTML='';
@@ -150,19 +152,24 @@ function renderAvatarGrid(){
     const btn=document.createElement('button');
     btn.className='avatar-btn'+(av===selectedAvatar?' active':'');
     btn.textContent=av;
-    btn.onclick=()=>{selectedAvatar=av;document.querySelectorAll('.avatar-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');};
+    btn.onclick=()=>{
+      selectedAvatar=av;
+      document.querySelectorAll('.avatar-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    };
     grid.appendChild(btn);
   });
 }
+
 function createProfile(){
   const name=document.getElementById('newProfileName').value.trim();
   const pin=document.getElementById('newProfilePin').value.trim();
-  if(!name){showToast('Naam likhna zaroori hai!');return;}
-  if(pin&&!/^\d{4}$/.test(pin)){showToast('PIN 4 numbers ka hona chahiye!');return;}
+  if(!name){showToast(t('nameRequired'));return;}
+  if(pin&&!/^\d{4}$/.test(pin)){showToast(t('pinFourDigits'));return;}
   profiles.push({id:Date.now().toString(),name,avatar:selectedAvatar,pin:pin||null,createdAt:Date.now()});
   saveProfiles();
   document.getElementById('createProfileModal').classList.add('hidden');
-  showToast('✓ Profile bana di!','success');
+  showToast(t('profileCreated'),'success');
   renderProfiles();
 }
 
@@ -171,6 +178,19 @@ function renderStats(){
   document.getElementById('statTotal').textContent=inventory.length;
   document.getElementById('statLow').textContent=inventory.filter(i=>i.qty>0&&i.qty<=i.minQty).length;
   document.getElementById('statOut').textContent=shoppingList.length;
+}
+
+// ===== UNIT LABEL HELPER =====
+function getUnitLabel(unit){
+  const map={pcs:t('unitLabelPcs'),kg:t('unitLabelKg'),ltr:t('unitLabelLtr'),gm:t('unitLabelGm'),pkt:t('unitLabelPkt')};
+  return map[unit]||'';
+}
+
+function formatQty(item){
+  const q=item.qty;
+  const u=item.unit||'pcs';
+  const unitLabel={pcs:'',kg:' kg',ltr:' L',gm:' g',pkt:' pkt'};
+  return q+(unitLabel[u]||'');
 }
 
 // ===== INVENTORY =====
@@ -182,19 +202,16 @@ function getFilteredInventory(){
   return items;
 }
 
-function formatQty(item){
-  const q=item.qty;
-  const u=item.unit||'pcs';
-  const unitLabel={pcs:'',kg:' kg',ltr:' L',gm:' g',pkt:' pkt'};
-  return q+(unitLabel[u]||'');
-}
-
 function renderInventory(){
   const list=document.getElementById('inventoryList');
   const empty=document.getElementById('emptyInventory');
   list.innerHTML='';
   const items=getFilteredInventory();
-  if(items.length===0){empty.classList.remove('hidden');return;}
+  if(items.length===0){
+    empty.classList.remove('hidden');
+    empty.querySelector('p').textContent=t('inventoryEmpty');
+    return;
+  }
   empty.classList.add('hidden');
   items.forEach((item,idx)=>{
     const isOut=item.qty===0;
@@ -202,7 +219,7 @@ function renderInventory(){
     const sc=isOut?'out-of-stock':isLow?'low-stock':'in-stock';
     const sl=isOut?t('outOfStock'):isLow?t('lowStock'):t('inStock');
     const unit=item.unit||'pcs';
-    const unitLabel={pcs:'pcs',kg:'kg',ltr:'L',gm:'g',pkt:' pkt'}[unit]||'';
+    const unitLabel=getUnitLabel(unit);
     const card=document.createElement('div');
     card.className=`item-card ${sc}`;
     card.style.animationDelay=`${idx*0.04}s`;
@@ -254,7 +271,11 @@ function renderShoppingList(){
   list.innerHTML='';
   const count=shoppingList.length;
   badge.textContent=count;badge.style.display=count>0?'inline-flex':'none';
-  if(count===0){empty.classList.remove('hidden');actions.classList.add('hidden');return;}
+  if(count===0){
+    empty.classList.remove('hidden');
+    empty.querySelector('p').textContent=t('shoppingEmpty');
+    actions.classList.add('hidden');return;
+  }
   empty.classList.add('hidden');actions.classList.remove('hidden');
   shoppingList.forEach(item=>{
     const card=document.createElement('div');
@@ -268,6 +289,11 @@ function renderShoppingList(){
       <button class="btn-restock" data-id="${item.id}">${t('restock')}</button>`;
     list.appendChild(card);
   });
+  // Update button labels
+  const waBtn=document.getElementById('whatsappBtn');
+  if(waBtn)waBtn.querySelector('span').textContent=t('shareWhatsApp');
+  const clearBtn=document.getElementById('clearShoppingBtn');
+  if(clearBtn)clearBtn.querySelector('span').textContent=t('clearAll');
 }
 
 // ===== BUDGET =====
@@ -279,19 +305,58 @@ function renderBudget(){
   const budget=parseInt(localStorage.getItem(profileKey('budget'))||'0');
   const left=budget-totalSpent;
   const el=id=>document.getElementById(id);
+
   if(el('budgetTotalNum'))el('budgetTotalNum').textContent='₹'+budget.toLocaleString('en-IN');
   if(el('budgetSpentNum'))el('budgetSpentNum').textContent='₹'+totalSpent.toLocaleString('en-IN');
-  if(el('budgetLeftNum')){el('budgetLeftNum').textContent=(left<0?'-':'')+'₹'+Math.abs(left).toLocaleString('en-IN');el('budgetLeftNum').style.color=left<0?'var(--rose)':'var(--sage)';}
-  if(el('budgetSetInput'))el('budgetSetInput').value=budget||'';
-  if(el('budgetProgress')&&budget>0){const pct=Math.min(100,(totalSpent/budget)*100);el('budgetProgress').style.width=pct+'%';el('budgetProgress').style.background=pct>90?'var(--rose)':pct>70?'var(--gold)':'var(--sage)';}
-  else if(el('budgetProgress'))el('budgetProgress').style.width='0%';
+  if(el('budgetLeftNum')){
+    el('budgetLeftNum').textContent=(left<0?'-':'')+'₹'+Math.abs(left).toLocaleString('en-IN');
+    el('budgetLeftNum').style.color=left<0?'var(--rose)':'var(--sage)';
+  }
+  if(el('budgetSetInput'))el('budgetSetInput').placeholder=t('budgetSetPlaceholder');
+  if(el('budgetProgress')&&budget>0){
+    const pct=Math.min(100,(totalSpent/budget)*100);
+    el('budgetProgress').style.width=pct+'%';
+    el('budgetProgress').style.background=pct>90?'var(--rose)':pct>70?'var(--gold)':'var(--sage)';
+  } else if(el('budgetProgress'))el('budgetProgress').style.width='0%';
+
+  // Update section titles
+  const breakTitle=document.querySelector('#budgetTab .section-title');
+  // Update category labels in select
+  const cat=el('expCategory');
+  if(cat){
+    cat.options[0].text='🛒 '+t('catGrocery');
+    cat.options[1].text='🥕 '+t('catVeg');
+    cat.options[2].text='🥛 '+t('catDairy');
+    cat.options[3].text='🧹 '+t('catCleaning');
+    cat.options[4].text='📦 '+t('catOther');
+  }
+
   const cats={};
   me.forEach(e=>{cats[e.category||'other']=(cats[e.category||'other']||0)+e.amount;});
-  if(el('catBreakdown'))el('catBreakdown').innerHTML=Object.entries(cats).length===0?'<div class="no-data">Koi kharcha nahi hua abhi</div>':Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>`<div class="cat-row"><span class="cat-name">${getCatEmoji(cat)} ${t('cat'+cat.charAt(0).toUpperCase()+cat.slice(1))}</span><span class="cat-amt">₹${amt.toLocaleString('en-IN')}</span></div>`).join('');
+  if(el('catBreakdown'))el('catBreakdown').innerHTML=
+    Object.entries(cats).length===0
+      ?`<div class="no-data">${t('noCatData')}</div>`
+      :Object.entries(cats).sort((a,b)=>b[1]-a[1]).map(([cat,amt])=>
+        `<div class="cat-row"><span class="cat-name">${getCatEmoji(cat)} ${getCatLabel(cat)}</span><span class="cat-amt">₹${amt.toLocaleString('en-IN')}</span></div>`
+      ).join('');
+
   const sorted=[...me].sort((a,b)=>new Date(b.date)-new Date(a.date));
-  if(el('expenseList'))el('expenseList').innerHTML=sorted.length===0?'<div class="no-data">Is mahine koi kharcha nahi</div>':sorted.map(e=>`<div class="expense-row"><span class="exp-emoji">${getCatEmoji(e.category)}</span><div class="exp-info"><div class="exp-name">${escapeHtml(e.name)}</div><div class="exp-date">${formatDate(e.date)}</div></div><div class="exp-right"><span class="exp-amt">₹${e.amount}</span><button class="btn-del-exp" onclick="deleteExpense('${e.id}')">✕</button></div></div>`).join('');
+  if(el('expenseList'))el('expenseList').innerHTML=
+    sorted.length===0
+      ?`<div class="no-data">${t('noBudgetData')}</div>`
+      :sorted.map(e=>
+        `<div class="expense-row"><span class="exp-emoji">${getCatEmoji(e.category)}</span>
+        <div class="exp-info"><div class="exp-name">${escapeHtml(e.name)}</div>
+        <div class="exp-date">${formatDate(e.date)}</div></div>
+        <div class="exp-right"><span class="exp-amt">₹${e.amount}</span>
+        <button class="btn-del-exp" onclick="deleteExpense('${e.id}')">✕</button></div></div>`
+      ).join('');
 }
 
+function getCatLabel(cat){
+  const map={grocery:t('catGrocery'),veg:t('catVeg'),dairy:t('catDairy'),cleaning:t('catCleaning'),other:t('catOther')};
+  return map[cat]||t('catOther');
+}
 function getCatEmoji(cat){return{grocery:'🛒',veg:'🥕',dairy:'🥛',cleaning:'🧹',other:'📦'}[cat]||'📦';}
 
 function addExpense(){
@@ -299,19 +364,19 @@ function addExpense(){
   const amount=parseFloat(document.getElementById('expAmount').value);
   const date=document.getElementById('expDate').value;
   const category=document.getElementById('expCategory').value;
-  if(!name||!amount||!date){showToast('Saari details bharo!');return;}
+  if(!name||!amount||!date){showToast(t('fillAllDetails')||'Fill all details!');return;}
   expenses.push({id:Date.now().toString(),name,amount,date,category,addedBy:currentProfile?.name});
   document.getElementById('expName').value='';
   document.getElementById('expAmount').value='';
-  saveState();renderBudget();showToast('✓ Kharcha add hua!','success');
+  saveState();renderBudget();showToast('✓ '+t('addExpense'),'success');
 }
 
 function deleteExpense(id){expenses=expenses.filter(e=>e.id!==id);saveState();renderBudget();}
 
 function setBudget(){
   const val=parseInt(document.getElementById('budgetSetInput').value);
-  if(!val||val<=0){showToast('Valid budget daalo!');return;}
-  localStorage.setItem(profileKey('budget'),val);renderBudget();showToast('✓ Budget set!','success');
+  if(!val||val<=0){showToast(t('validBudget')||'Enter a valid budget!');return;}
+  localStorage.setItem(profileKey('budget'),val);renderBudget();showToast('✓ '+t('setBudget'),'success');
 }
 
 // ===== EXPIRY =====
@@ -320,32 +385,45 @@ function renderExpiry(){
   if(!list)return;
   const today=new Date();today.setHours(0,0,0,0);
   const sorted=[...expiryItems].sort((a,b)=>new Date(a.expiryDate)-new Date(b.expiryDate));
-  list.innerHTML=sorted.length===0?'<div class="no-data">📭 Koi expiry item nahi. Upar se add karein!</div>':sorted.map(item=>{
-    const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);
-    const diff=Math.round((exp-today)/86400000);
-    const isExpired=diff<0;const isSoon=diff>=0&&diff<=7;
-    const cls=isExpired?'expiry-expired':isSoon?'expiry-soon':'expiry-ok';
-    const label=isExpired?t('expired'):`${diff} ${t('daysLeft')}`;
-    return `<div class="expiry-card ${cls}"><span class="item-emoji">${getEmoji(item.name)}</span><div class="expiry-info"><div class="expiry-name">${escapeHtml(item.name)}</div><div class="expiry-date">${formatDate(item.expiryDate)}</div></div><div class="expiry-badge ${cls}">${label}</div><button class="btn-delete" onclick="deleteExpiryItem('${item.id}')">✕</button></div>`;
-  }).join('');
+  list.innerHTML=sorted.length===0
+    ?`<div class="no-data">📭 ${t('noExpiryItems')||'No expiry items. Add from above!'}</div>`
+    :sorted.map(item=>{
+      const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);
+      const diff=Math.round((exp-today)/86400000);
+      const isExpired=diff<0;const isSoon=diff>=0&&diff<=7;
+      const cls=isExpired?'expiry-expired':isSoon?'expiry-soon':'expiry-ok';
+      const label=isExpired?t('expired'):`${diff} ${t('daysLeft')}`;
+      return `<div class="expiry-card ${cls}">
+        <span class="item-emoji">${getEmoji(item.name)}</span>
+        <div class="expiry-info">
+          <div class="expiry-name">${escapeHtml(item.name)}</div>
+          <div class="expiry-date">${formatDate(item.expiryDate)}</div>
+        </div>
+        <div class="expiry-badge ${cls}">${label}</div>
+        <button class="btn-delete" onclick="deleteExpiryItem('${item.id}')">✕</button>
+      </div>`;
+    }).join('');
 }
 
 function addExpiryItem(){
   const name=document.getElementById('expiryNameInput').value.trim();
   const date=document.getElementById('expiryDateInput').value;
-  if(!name||!date){showToast('Naam aur date daalo!');return;}
+  if(!name||!date){showToast(t('enterNameAndDate')||'Enter name and date!');return;}
   expiryItems.push({id:Date.now().toString(),name,expiryDate:date});
   document.getElementById('expiryNameInput').value='';
   document.getElementById('expiryDateInput').value='';
-  saveState();renderExpiry();showToast('✓ Expiry item add hua!','success');
+  saveState();renderExpiry();showToast('✓ '+t('addExpiry'),'success');
 }
 
 function deleteExpiryItem(id){expiryItems=expiryItems.filter(e=>e.id!==id);saveState();renderExpiry();}
 
 function checkExpiryAlerts(){
   const today=new Date();today.setHours(0,0,0,0);
-  const soon=expiryItems.filter(item=>{const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);const diff=Math.round((exp-today)/86400000);return diff>=0&&diff<=3;});
-  if(soon.length>0)setTimeout(()=>showToast(`⚠️ ${soon.length} item(s) 3 din mein expire!`,'cart'),1500);
+  const soon=expiryItems.filter(item=>{
+    const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);
+    const diff=Math.round((exp-today)/86400000);return diff>=0&&diff<=3;
+  });
+  if(soon.length>0)setTimeout(()=>showToast(`⚠️ ${soon.length} item(s) expire in 3 days!`,'cart'),1500);
 }
 
 // ===== REPORTS =====
@@ -354,17 +432,33 @@ function renderReports(){
   if(!container)return;
   const now=new Date();
   const today=new Date();today.setHours(0,0,0,0);
-  const expiredCount=expiryItems.filter(item=>{const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);return exp<today;}).length;
-  let html=`<div class="report-summary"><div class="report-stat-card purple"><div class="rs-num">${inventory.length}</div><div class="rs-label">${t('totalItems')}</div></div><div class="report-stat-card orange"><div class="rs-num">${inventory.filter(i=>i.qty<=i.minQty).length}</div><div class="rs-label">${t('lowStockItems')}</div></div><div class="report-stat-card red"><div class="rs-num">${expiredCount}</div><div class="rs-label">${t('expiredItems')}</div></div></div>`;
+  const expiredCount=expiryItems.filter(item=>{
+    const exp=new Date(item.expiryDate);exp.setHours(0,0,0,0);return exp<today;
+  }).length;
+
+  let html=`<div class="report-summary">
+    <div class="report-stat-card purple"><div class="rs-num">${inventory.length}</div><div class="rs-label">${t('totalItems')}</div></div>
+    <div class="report-stat-card orange"><div class="rs-num">${inventory.filter(i=>i.qty<=i.minQty).length}</div><div class="rs-label">${t('lowStockItems')}</div></div>
+    <div class="report-stat-card red"><div class="rs-num">${expiredCount}</div><div class="rs-label">${t('expiredItems')}</div></div>
+  </div>`;
+
   for(let i=0;i<3;i++){
     const d=new Date(now.getFullYear(),now.getMonth()-i,1);
     const month=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     const me=expenses.filter(e=>e.date&&e.date.startsWith(month));
     const total=me.reduce((s,e)=>s+(e.amount||0),0);
-    const budget=parseInt(localStorage.getItem(profileKey('budget'))||'0');
+    const budgetAmt=parseInt(localStorage.getItem(profileKey('budget'))||'0');
     const mname=d.toLocaleString('default',{month:'long',year:'numeric'});
     const cats=me.reduce((acc,e)=>{acc[e.category||'other']=(acc[e.category||'other']||0)+e.amount;return acc;},{});
-    html+=`<div class="report-month-card"><div class="report-month-title">📅 ${mname}</div><div class="report-month-total">₹${total.toLocaleString('en-IN')} kharch hua</div>${budget>0?`<div class="report-month-budget">${total<=budget?'✅':'⚠️'} Budget: ₹${budget.toLocaleString('en-IN')}</div>`:''}${me.length===0?'<div class="no-data">Koi kharcha nahi</div>':Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([cat,amt])=>`<div class="report-cat-row">${getCatEmoji(cat)} ${t('cat'+capitalize(cat))} <span>₹${amt}</span></div>`).join('')}</div>`;
+    html+=`<div class="report-month-card">
+      <div class="report-month-title">📅 ${mname}</div>
+      <div class="report-month-total">₹${total.toLocaleString('en-IN')} ${t('spent')}</div>
+      ${budgetAmt>0?`<div class="report-month-budget">${total<=budgetAmt?'✅':'⚠️'} ${t('budget')}: ₹${budgetAmt.toLocaleString('en-IN')}</div>`:''}
+      ${me.length===0?`<div class="no-data">${t('noExpenses')}</div>`:
+        Object.entries(cats).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([cat,amt])=>
+          `<div class="report-cat-row">${getCatEmoji(cat)} ${getCatLabel(cat)} <span>₹${amt}</span></div>`
+        ).join('')}
+    </div>`;
   }
   container.innerHTML=html;
 }
@@ -377,88 +471,108 @@ function renderFamily(){
   container.innerHTML=`
     <div class="family-hero">
       <div class="family-hero-icon">👨‍👩‍👧‍👦</div>
-      <div class="family-hero-title">Family Accounts</div>
-      <div class="family-hero-sub">One app, the whole family — everyone can view it and manage it together.</div>
+      <div class="family-hero-title">${t('familyTab')} Accounts</div>
+      <div class="family-hero-sub">${t('familyShare')} — ${t('voiceHelpText')||'Everyone can manage together.'}</div>
     </div>
 
     <div class="section-card">
-      <div class="section-title">📱 Install the App — On Your Mobile</div>
+      <div class="section-title">📱 ${t('installApp')} — ${t('installGuide')}</div>
       <div class="install-steps">
-        <div class="install-step"><div class="step-num">1</div><div class="step-text"><strong> Android:</strong>Open in Chrome → Menu (⋮) → "Add to Home Screen" → Install</div></div>
-        <div class="install-step"><div class="step-num">2</div><div class="step-text"><strong> iPhone:</strong> Open in Safari → Share (□↑) → "Add to Home Screen" → Add</div></div>
-        <div class="install-step"><div class="step-num">3</div><div class="step-text">Now this app will appear on your phone just like a regular app!</div></div>
+        <div class="install-step"><div class="step-num">1</div><div class="step-text"><strong>Android:</strong> Chrome → Menu (⋮) → "Add to Home Screen"</div></div>
+        <div class="install-step"><div class="step-num">2</div><div class="step-text"><strong>iPhone:</strong> Safari → Share (□↑) → "Add to Home Screen"</div></div>
+        <div class="install-step"><div class="step-num">3</div><div class="step-text">${t('installFallback')}</div></div>
       </div>
-      <button class="btn-install-big" onclick="triggerInstall()">📲 Install Now </button>
+      <button class="btn-install-big" onclick="triggerInstall()">📲 ${t('installApp')}</button>
     </div>
 
     <div class="section-card">
-      <div class="section-title">🔗 Share it with your family</div>
+      <div class="section-title">🔗 ${t('shareLink')}</div>
       <div class="share-url-box">
-        <span class="share-url-text" id="shareUrlText">${appUrl}</span>
-        <button class="btn-copy-url" onclick="copyAppUrl('${appUrl}')">📋 Copy</button>
+        <span class="share-url-text">${appUrl}</span>
+        <button class="btn-copy-url" onclick="copyAppUrl('${appUrl}')">📋</button>
       </div>
       <div class="share-btns">
-        <button class="btn-wa-share" onclick="shareViaWhatsApp('${appUrl}')">📲 Send via WhatsApp</button>
-        <button class="btn-share-native" onclick="nativeShare('${appUrl}')">↗ Share </button>
+        <button class="btn-wa-share" onclick="shareViaWhatsApp('${appUrl}')">📲 WhatsApp</button>
+        <button class="btn-share-native" onclick="nativeShare('${appUrl}')">↗ ${t('shareLink')}</button>
       </div>
     </div>
 
     <div class="section-card">
-      <div class="section-title">👥 Profiles — Individual Accounts for Every Member</div>
+      <div class="section-title">👥 ${t('familyTab')} Profiles</div>
       <div class="profiles-list">
         ${profiles.map(p=>`
           <div class="family-profile-row">
             <span class="fp-avatar">${p.avatar}</span>
             <span class="fp-name">${escapeHtml(p.name)}</span>
-            <span class="fp-pin">${p.pin?'🔒 PIN':'🔓 Open'}</span>
-            ${p.id!==currentProfile?.id?`<button class="btn-del-profile" onclick="deleteProfile('${p.id}')">🗑️</button>`:'<span class="fp-you">(You)</span>'}
-          </div>
-        `).join('')}
+            <span class="fp-pin">${p.pin?'🔒 PIN':'🔓'}</span>
+            ${p.id!==currentProfile?.id
+              ?`<button class="btn-del-profile" onclick="deleteProfile('${p.id}')">🗑️</button>`
+              :`<span class="fp-you">(${t('switchProfile')||'You'})</span>`}
+          </div>`).join('')}
       </div>
-      <button class="btn-add-family" onclick="openCreateProfile()">➕ New Profile</button>
+      <button class="btn-add-family" onclick="openCreateProfile()">➕ ${t('createProfile')}</button>
     </div>
 
     <div class="section-card">
-      <div class="section-title">💡 How to use app</div>
+      <div class="section-title">💡 ${t('voiceHelp')}</div>
       <div class="tips-grid">
-        <div class="tip-card"><div class="tip-icon">🎤</div><div class="tip-text"><strong>Voice:</strong> Press the mic and say the item name — it gets added instantly</div></div>
-        <div class="tip-card"><div class="tip-icon">📷</div><div class="tip-text"><strong>Photo:</strong> Scan or take a photo to add items</div></div>
-        <div class="tip-card"><div class="tip-icon">⚖️</div><div class="tip-text"><strong>Units:</strong> Vegetables are measured in kg, milk in liters, and other items in pieces</div></div>
-        <div class="tip-card"><div class="tip-icon">📲</div><div class="tip-text"><strong>WhatsApp:</strong> Share the shopping list directly on WhatsApp</div></div>
-        <div class="tip-card"><div class="tip-icon">⏰</div><div class="tip-text"><strong>Expiry:</strong> Set an expiry date for items and receive alerts</div></div>
-        <div class="tip-card"><div class="tip-icon">💰</div><div class="tip-text"><strong>Budget:</strong> Set your monthly budget and track your expenses</div></div>
+        <div class="tip-card"><div class="tip-icon">🎤</div><div class="tip-text"><strong>${t('voiceBtn')}:</strong> ${t('voiceHelpText')}</div></div>
+        <div class="tip-card"><div class="tip-icon">📷</div><div class="tip-text"><strong>${t('photoCapture')}:</strong> Scan to add items</div></div>
+        <div class="tip-card"><div class="tip-icon">⚖️</div><div class="tip-text"><strong>${t('unitLabel')}:</strong> kg, ltr, pcs, gm, pkt</div></div>
+        <div class="tip-card"><div class="tip-icon">📲</div><div class="tip-text"><strong>WhatsApp:</strong> ${t('shareWhatsApp')}</div></div>
+        <div class="tip-card"><div class="tip-icon">⏰</div><div class="tip-text"><strong>${t('expiryTab')}:</strong> ${t('expiresSoon')}</div></div>
+        <div class="tip-card"><div class="tip-icon">💰</div><div class="tip-text"><strong>${t('budgetTab')}:</strong> ${t('setBudget')}</div></div>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 function deleteProfile(id){
-  if(profiles.length<=1){showToast('At least one profile is needed!');return;}
-  if(!confirm('Delete this profile?'))return;
+  if(profiles.length<=1){showToast(t('atLeastOneProfile'));return;}
+  if(!confirm(t('deleteProfileConfirm')))return;
   profiles=profiles.filter(p=>p.id!==id);
   saveProfiles();
   renderFamily();
-  showToast('Profile deleted','success');
+  showToast(t('profileDeleted'),'success');
 }
 
-function copyAppUrl(url){navigator.clipboard?.writeText(url).then(()=>showToast('✓ Link copied!','success')).catch(()=>showToast('Link is not copied','error'));}
-function shareViaWhatsApp(url){const msg=`🏠 *Smart Serve* — Track household items!\n\nUse this app: ${url}\n\nEach member can create their own separate profile! 👨‍👩‍👧‍👦`;window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');}
-function nativeShare(url){if(navigator.share){navigator.share({title:'Smart Serve',text:'Home Inventory App',url}).catch(()=>{});}else{copyAppUrl(url);}}
+function copyAppUrl(url){
+  navigator.clipboard?.writeText(url)
+    .then(()=>showToast(t('linkCopied'),'success'))
+    .catch(()=>showToast(t('linkCopyFail'),'error'));
+}
+function shareViaWhatsApp(url){
+  const msg=`🏠 *Smart Serve* — ${t('appSub')}!\n\n${url}\n\n👨‍👩‍👧‍👦`;
+  window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+}
+function nativeShare(url){
+  if(navigator.share){navigator.share({title:'Smart Serve',text:t('appSub'),url}).catch(()=>{});}
+  else{copyAppUrl(url);}
+}
 
 let deferredInstall=null;
 function triggerInstall(){
-  if(deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('installBanner').style.display='none';showToast('✓ App install ho rahi hai!','success');});}
-  else{showToast('Install via your browser — check the steps above');}
+  if(deferredInstall){
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(()=>{
+      deferredInstall=null;
+      document.getElementById('installBanner').style.display='none';
+      showToast(t('installing'),'success');
+    });
+  }else{showToast(t('installFallback'));}
 }
 
 // ===== RENDER ALL =====
 function renderAll(){
-  renderInventory();renderShoppingList();renderStats();
+  renderInventory();
+  renderShoppingList();
+  renderStats();
+  // Always re-render active tab
   if(activeTab==='budget')renderBudget();
   if(activeTab==='expiry')renderExpiry();
   if(activeTab==='reports')renderReports();
   if(activeTab==='family')renderFamily();
-  applyTranslations();saveState();
+  applyTranslations();
+  saveState();
 }
 
 // ===== ITEM ACTIONS =====
@@ -468,7 +582,6 @@ function addItemToInventory(name,qty,minQty,unit){
   unit=unit||'pcs';
   const ex=inventory.find(i=>i.name.toLowerCase()===name.toLowerCase());
   if(ex){
-    // Smart step based on unit
     const step=ex.unit==='kg'||ex.unit==='ltr'?0.5:1;
     ex.qty=Math.round((ex.qty+step)*10)/10;
     shoppingList=shoppingList.filter(s=>s.id!==ex.id);
@@ -484,7 +597,10 @@ function decreaseQty(id){
   const item=inventory.find(i=>i.id===id);if(!item||item.qty<=0)return;
   const step=getStep(item);
   item.qty=Math.max(0,Math.round((item.qty-step)*10)/10);
-  if(item.qty===0&&!shoppingList.find(s=>s.id===id)){shoppingList.push({id:item.id,name:item.name,emoji:item.emoji});showToast(t('toastAutoCart'),'cart');}
+  if(item.qty===0&&!shoppingList.find(s=>s.id===id)){
+    shoppingList.push({id:item.id,name:item.name,emoji:item.emoji});
+    showToast(t('toastAutoCart'),'cart');
+  }
   renderAll();
 }
 
@@ -496,14 +612,15 @@ function increaseQty(id){
   renderAll();
 }
 
-function deleteItem(id){inventory=inventory.filter(i=>i.id!==id);shoppingList=shoppingList.filter(s=>s.id!==id);renderAll();showToast(t('toastRemoved'));}
+function deleteItem(id){
+  inventory=inventory.filter(i=>i.id!==id);
+  shoppingList=shoppingList.filter(s=>s.id!==id);
+  renderAll();showToast(t('toastRemoved'));
+}
 
 function restockItem(id){
   const inv=inventory.find(i=>i.id===id);
-  if(inv){
-    const def=inv.unit==='kg'||inv.unit==='ltr'?2:Math.max(inv.minQty||1,5);
-    inv.qty=def;
-  }
+  if(inv){const def=inv.unit==='kg'||inv.unit==='ltr'?2:Math.max(inv.minQty||1,5);inv.qty=def;}
   shoppingList=shoppingList.filter(s=>s.id!==id);
   renderAll();showToast(t('toastRestocked'),'success');
 }
@@ -555,17 +672,28 @@ function switchTab(tabName){
   if(tabName==='family')renderFamily();
 }
 
-function setSortMode(mode){sortMode=mode;document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===mode));renderInventory();}
+function setSortMode(mode){
+  sortMode=mode;
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.toggle('active',b.dataset.sort===mode));
+  renderInventory();
+}
 
+// ===== LANGUAGE MODAL =====
 function openLangModal(){
   const modal=document.getElementById('langModal');
   const grid=document.getElementById('langGrid');
   grid.innerHTML='';
+  // Update modal title
+  const title=modal.querySelector('.modal-title');
+  if(title)title.textContent=t('selectLanguage');
   LANGUAGES.forEach(lang=>{
     const btn=document.createElement('button');
     btn.className='lang-option'+(lang.code===currentLang?' active':'');
     btn.innerHTML=`<strong>${lang.nativeLabel}</strong><small>${lang.label}</small>`;
-    btn.onclick=()=>{setLanguage(lang.code);closeLangModal();renderAll();};
+    btn.onclick=()=>{
+      setLanguage(lang.code);   // setLanguage now calls renderAll internally
+      closeLangModal();
+    };
     grid.appendChild(btn);
   });
   modal.classList.remove('hidden');
@@ -575,28 +703,26 @@ function closeLangModal(){document.getElementById('langModal').classList.add('hi
 // ===== VOICE =====
 function startVoice(){
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){showToast('Voice sirf Chrome mein kaam karta hai');return;}
+  if(!SR){showToast(t('voiceChromeOnly'));return;}
   const lang=LANGUAGES.find(l=>l.code===currentLang);
   const rec=new SR();
-  rec.lang=lang?lang.voice:'hi-IN';
+  rec.lang=lang?lang.voice:'en-IN';
   rec.interimResults=false;
   const btn=document.getElementById('voiceBtn');
   btn.classList.add('listening');btn.textContent='🔴';
-  showToast('🎤 Bol do saamaan ka naam...','cart');
+  showToast(t('voicePrompt'),'cart');
   rec.start();
   rec.onresult=e=>{
     const s=e.results[0][0].transcript;
     btn.classList.remove('listening');btn.textContent='🎤';
-    // Smart unit detection from speech
     let detectedUnit='pcs';
     if(/kilo|kg|kilogram/i.test(s))detectedUnit='kg';
     else if(/liter|litre|ltr/i.test(s))detectedUnit='ltr';
     else if(/gram|gm/i.test(s))detectedUnit='gm';
     else if(/pkt|packet/i.test(s))detectedUnit='pkt';
-    // Remove unit words from name
     const cleanName=s.replace(/\d+\s*(kilo|kg|kilogram|liter|litre|ltr|gram|gm|pcs|piece|pkt|packet)/gi,'').trim()||s;
     addItemToInventory(cleanName,1,1,detectedUnit);
-    showToast('🎤 "'+cleanName+'" add hua!','success');
+    showToast('🎤 "'+cleanName+'" '+t('toastAdded'),'success');
   };
   rec.onerror=rec.onend=()=>{btn.classList.remove('listening');btn.textContent='🎤';};
 }
@@ -607,10 +733,15 @@ let scanStream=null,scanInterval=null;
 function openScan(){
   pendingScanName=null;
   document.getElementById('scanModal').classList.remove('hidden');
+  // Update modal text
+  const title=document.getElementById('scanModal').querySelector('.modal-title');
+  if(title)title.textContent=t('scanTitle');
   const btn=document.getElementById('scanAddBtn');
   btn.disabled=true;btn.style.opacity='0.5';
+  btn.textContent=t('addToInventory');
   document.getElementById('scanResult').textContent='';
   document.getElementById('scanStatus').textContent=t('scanDetecting');
+  document.getElementById('scanManualInput').placeholder=t('scanManualPlaceholder');
   document.getElementById('scanManualInput').value='';
   document.getElementById('ocrStatus').textContent='';
   startCamera();
@@ -629,12 +760,11 @@ async function startCamera(){
   const video=document.getElementById('scanVideo');
   try{
     scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}}});
-    video.srcObject=scanStream;
-    video.play();
+    video.srcObject=scanStream;video.play();
     startFrameAnalysis(video);
-    document.getElementById('scanStatus').textContent='📷 Camera ready — Show the barcode or product';
+    document.getElementById('scanStatus').textContent=t('cameraReady');
   }catch(e){
-    document.getElementById('scanStatus').textContent='❌ Camera not available — you can upload a photo below';
+    document.getElementById('scanStatus').textContent=t('cameraError');
   }
 }
 
@@ -653,24 +783,23 @@ function startFrameAnalysis(video){
     ctx.drawImage(video,0,0);
     if('BarcodeDetector' in window){
       new BarcodeDetector({formats:['ean_13','ean_8','qr_code','code_128','upc_a','upc_e']})
-        .detect(canvas)
-        .then(barcodes=>{if(barcodes.length>0&&!detected){detected=true;lookupBarcode(barcodes[0].rawValue);}})
+        .detect(canvas).then(barcodes=>{if(barcodes.length>0&&!detected){detected=true;lookupBarcode(barcodes[0].rawValue);}})
         .catch(()=>{});
     }
   },800);
 }
 
 async function lookupBarcode(code){
-  document.getElementById('scanStatus').textContent='🔍 Looking for a product…';
+  document.getElementById('scanStatus').textContent=t('lookingUp');
   try{
     const res=await fetch(`https://world.openfoodfacts.org/api/v0/product/${code}.json`);
     const data=await res.json();
     if(data.status===1&&data.product){
-      setScanResult(data.product.product_name_hi||data.product.product_name||code,'✅ Product mila!');
+      setScanResult(data.product.product_name_hi||data.product.product_name||code,'✅ '+t('scanFound'));
       return;
     }
   }catch(e){}
-  setScanResult('Item #'+code,'📦 Unknown — naam edit karein');
+  setScanResult('Item #'+code,t('unknownProduct'));
 }
 
 function setScanResult(name,statusMsg){
@@ -680,21 +809,20 @@ function setScanResult(name,statusMsg){
   document.getElementById('scanManualInput').value=name;
   const btn=document.getElementById('scanAddBtn');
   btn.disabled=false;btn.style.opacity='1';
+  btn.textContent=t('addToInventory');
 }
 
 function addScannedItem(){
   const manual=document.getElementById('scanManualInput').value.trim();
   const name=manual||pendingScanName;
   const unit=document.getElementById('scanUnitSelect')?.value||'pcs';
-  if(name){addItemToInventory(name,1,1,unit);closeScan();showToast('✓ '+name+' add hua!','success');}
+  if(name){addItemToInventory(name,1,1,unit);closeScan();showToast('✓ '+name+' '+t('toastAdded'),'success');}
 }
 
-// ===== PHOTO CAPTURE (Take Photo directly) =====
+// ===== PHOTO CAPTURE =====
 function takePhotoAndAdd(){
   const input=document.createElement('input');
-  input.type='file';
-  input.accept='image/*';
-  input.capture='environment'; // opens camera directly on mobile
+  input.type='file';input.accept='image/*';input.capture='environment';
   input.onchange=(e)=>handleOCRImage(e);
   input.click();
 }
@@ -704,39 +832,41 @@ async function handleOCRImage(e){
   const file=e.target.files[0];if(!file)return;
   const status=document.getElementById('ocrStatus');
   const ocrBtn=document.getElementById('ocrBtn');
-  status.textContent='🔍 Scanning the photo…';
+  status.textContent='🔍 '+t('scanDetecting');
   if(ocrBtn)ocrBtn.disabled=true;
   try{
-    const base64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result.split(',')[1]);r.onerror=()=>rej(new Error('fail'));r.readAsDataURL(file);});
+    const base64=await new Promise((res,rej)=>{
+      const r=new FileReader();
+      r.onload=()=>res(r.result.split(',')[1]);
+      r.onerror=()=>rej(new Error('fail'));
+      r.readAsDataURL(file);
+    });
     const response=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         model:'claude-sonnet-4-20250514',
         max_tokens:150,
-        messages:[{
-          role:'user',
-          content:[
-            {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:base64}},
-            {type:'text',text:'Which grocery or household product is in this image? JSON mein jawab do: {"name":"product name","unit":"pcs/kg/ltr/gm/pkt"}. Sirf JSON, koi aur text nahi.'}
-          ]
-        }]
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:base64}},
+          {type:'text',text:'Which grocery or household product is in this image? Respond in JSON: {"name":"product name","unit":"pcs/kg/ltr/gm/pkt"}. JSON only, no other text.'}
+        ]}]
       })
     });
     const data=await response.json();
     if(data.content?.[0]?.text){
       try{
         const parsed=JSON.parse(data.content[0].text.replace(/```json|```/g,'').trim());
-        setScanResult(parsed.name||data.content[0].text,'✅ Photo se naam mila!');
+        setScanResult(parsed.name||data.content[0].text,'✅ '+t('scanFound'));
         if(parsed.unit&&document.getElementById('scanUnitSelect'))document.getElementById('scanUnitSelect').value=parsed.unit;
-        status.textContent='✅ Naam aur unit mila — confirm karo!';
+        status.textContent='✅ '+t('scanFound');
       }catch{
         const name=data.content[0].text.trim().replace(/["""*]/g,'').split('\n')[0];
-        setScanResult(name,'✅ Photo se naam mila!');
-        status.textContent='✅ Confirm karo ya naam badlo!';
+        setScanResult(name,'✅');
+        status.textContent='✅';
       }
-    }else status.textContent='❌ Nahi mila — manually likhein';
-  }catch(err){status.textContent='⚠️ Error — naam manually likhein';}
+    }else status.textContent='❌ '+t('cameraError');
+  }catch(err){status.textContent='⚠️ '+t('cameraError');}
   if(ocrBtn)ocrBtn.disabled=false;
   if(e.target)e.target.value='';
 }
@@ -744,13 +874,20 @@ async function handleOCRImage(e){
 // ===== PWA =====
 window.addEventListener('beforeinstallprompt',e=>{
   e.preventDefault();deferredInstall=e;
-  document.getElementById('installBanner').style.display='flex';
+  const banner=document.getElementById('installBanner');
+  if(banner){
+    banner.style.display='flex';
+    banner.querySelector('span').textContent=t('installPrompt');
+  }
 });
 
 function installApp(){
   if(!deferredInstall)return;
   deferredInstall.prompt();
-  deferredInstall.userChoice.then(()=>{deferredInstall=null;document.getElementById('installBanner').style.display='none';});
+  deferredInstall.userChoice.then(()=>{
+    deferredInstall=null;
+    document.getElementById('installBanner').style.display='none';
+  });
 }
 
 // ===== UTILS =====
@@ -806,12 +943,16 @@ function initEvents(){
   document.getElementById('closeScanModal').addEventListener('click',closeScan);
   document.getElementById('scanAddBtn').addEventListener('click',addScannedItem);
   document.getElementById('scanManualInput').addEventListener('input',function(){
-    if(this.value.trim()){pendingScanName=this.value.trim();const btn=document.getElementById('scanAddBtn');btn.disabled=false;btn.style.opacity='1';}
+    if(this.value.trim()){
+      pendingScanName=this.value.trim();
+      const btn=document.getElementById('scanAddBtn');
+      btn.disabled=false;btn.style.opacity='1';
+      btn.textContent=t('addToInventory');
+    }
   });
   document.getElementById('scanManualInput').addEventListener('keydown',e=>{if(e.key==='Enter')addScannedItem();});
   document.getElementById('ocrBtn').addEventListener('click',()=>document.getElementById('ocrFileInput').click());
   document.getElementById('ocrFileInput').addEventListener('change',handleOCRImage);
-  // Photo capture button (opens camera directly)
   document.getElementById('photoCaptureBtn').addEventListener('click',takePhotoAndAdd);
 
   document.getElementById('voiceBtn').addEventListener('click',startVoice);
@@ -832,7 +973,9 @@ function initEvents(){
 
 // ===== INIT =====
 function init(){
-  loadProfiles();applyTranslations();initEvents();
+  loadProfiles();
+  applyTranslations();
+  initEvents();
   const lastId=localStorage.getItem('ss_last_profile');
   const lastProfile=profiles.find(p=>p.id===lastId);
   if(profiles.length===0){showProfileScreen();}
